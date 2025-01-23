@@ -1,0 +1,41 @@
+# Python 관련
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# 환경 설정 파일
+.env
+*.env
+
+# 가상 환경
+venv/
+env/
+
+# IDE 관련
+.vscode/
+.idea/
+
+# 기타
+.DS_Store
+
+# 로그 파일
+*.log
+logs/
+
+# 빌드 산출물
+build/
+dist/
+*.egg-info/
+
+# 테스트 캐시
+.pytest_cache/
+.coverage
+htmlcov/
+tests
+
+# 임시 파일
+*.tmp
+*.bak
+*.swp
+*~
