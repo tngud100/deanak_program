@@ -2,9 +2,7 @@ from logging import critical
 from os import error
 from uu import Error
 from pymysqlreplication.row_event import (
-    DeleteRowsEvent,
     UpdateRowsEvent,
-    WriteRowsEvent,
 )
 from sqlalchemy import true
 from src.controller.deanak_controller import do_task

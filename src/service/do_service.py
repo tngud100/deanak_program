@@ -52,8 +52,8 @@ class DoService:
                 pc_num = await self._validate_worker(db, server_id, worker_id)
                 
             # 원격 연결 시작
-            if not await self.remote.start_remote(pc_num):
-                return False
+            # if not await self.remote.start_remote(pc_num):
+            #     return False
 
             # 2분 동안만 실행
             while (asyncio.get_event_loop().time() - start_time) < timeout_duration:
@@ -144,10 +144,10 @@ class DoService:
             server_id = await self.state.unique_id().read_unique_id()
             worker_id = deanak_info['worker_id']
 
-            # async with get_db_context() as db:
-            #     pc_num = await self._validate_worker(db, server_id, worker_id)
+            async with get_db_context() as db:
+                pc_num = await self._validate_worker(db, server_id, worker_id)
 
-            # # 원격 연결 시작
+            # 원격 연결 시작
             # if not await self.remote.start_remote(pc_num):
             #     return False
 

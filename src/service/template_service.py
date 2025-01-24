@@ -14,31 +14,31 @@ class TemplateService:
         self.base_url = self.base_url.rstrip('/')
         self.TEMPLATES = {
             # OTP 관련 템플릿
-            "otp_frame": '/otpFrame.PNG',
-            "otp_number": '/otpNumber.PNG',
-            "otp_wrong": '/otpWrong.PNG',
+            "otp_frame": '/otpFrame.png',
+            "otp_number": '/otpNumber.png',
+            "otp_wrong": '/otpWrong.png',
             # 대낙 관련 템플릿
-            "password_screen": '/passwordScreen.PNG',
-            "password_confirm": '/loginConfirm.PNG',
-            "wrong_password": '/wrongPassword.PNG',
-            "team_select_screen": '/selectTeam.PNG',
-            "team_select_text": '/selectTeamText.PNG',
+            "password_screen": '/passwordScreen.png',
+            "password_confirm": '/loginConfirm.png',
+            "wrong_password": '/wrongPassword.png',
+            "team_select_screen": '/selectTeam.png',
+            "team_select_text": '/selectTeamText.png',
             "purchase_before_main_screen": '/beforeMainPurchases.PNG',
-            "purchase_cancel_btn": '/purchaseCloseBtn.PNG',
-            "main_screen": '/mainScreen.PNG',
-            "market_screen": '/marketScreen.PNG',
-            "get_item_screen": '/getItemScreen.PNG',
-            "get_all_screen": '/getAllScreen.PNG',
-            "market_btn": '/market.PNG',
-            "list_btn": '/sellList.PNG',
-            "get_item_btn": '/getItemConfirm.PNG',
-            "arrange_btn_screen": '/PriceArrangeScreen.PNG',
-            "arrange_btn": '/priceArrangeBtn.PNG',
-            "price_desc": '/priceDesc.PNG',
-            "get_all_btn_screen": '/getAllScreen.PNG',
-            "get_all_btn": '/getAll.PNG',
-            "top_class_screen": '/noUseTopclassGetModal.PNG',
-            "top_class_cancel_btn": '/noUseTopclassGetConfirm.PNG',
+            "purchase_cancel_btn": '/purchaseCloseBtn.png',
+            "main_screen": '/mainScreen.png',
+            "market_screen": '/marketScreen.png',
+            "get_item_screen": '/getItemScreen.png',
+            "get_all_screen": '/getAllScreen.png',
+            "market_btn": '/market.png',
+            "list_btn": '/sellList.png',
+            "get_item_btn": '/getItemConfirm.png',
+            "arrange_btn_screen": '/priceArrangeScreen.png',
+            "arrange_btn": '/priceArrangeBtn.png',
+            "price_desc": '/priceDesc.png',
+            "get_all_btn_screen": '/getAllScreen.png',
+            "get_all_btn": '/getAll.png',
+            "top_class_screen": '/noUseTopclassGetModal.png',
+            "top_class_cancel_btn": '/noUseTopclassGetConfirm.png',
             # 중복 로그인 에러
             "same_login_in_anykey_error": '/atThatSameTimeInAnyKeyAndBeforeAccountExpire.png',
             "someone_already_login_error": '/duplicateConnection.png',
@@ -57,24 +57,38 @@ class TemplateService:
 
             # 서버에서 이미지 다운로드
             url = f"{self.base_url}{template_path}"
-            response = requests.get(url)
-            response.raise_for_status()  # 에러 체크
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+            except requests.RequestException as e:
+                print(f"첫 번째 시도 실패 ({url}): {str(e)}")
+                # 첫 번째 시도 실패시 다른 확장자로 시도
+                base_path = template_path[:-4]  # 확장자 제거
+                if template_path.lower().endswith('.png'):
+                    alt_path = base_path + '.PNG'
+                else:
+                    alt_path = base_path + '.png'
+                
+                url = f"{self.base_url}{alt_path}"
+                print(f"두 번째 시도 ({url})")
+                response = requests.get(url)
+                response.raise_for_status()
 
             # 이미지 데이터를 numpy array로 변환
             image_array = np.asarray(bytearray(response.content), dtype=np.uint8)
             template = cv2.imdecode(image_array, cv2.IMREAD_GRAYSCALE)
 
             if template is None:
-                raise TemplateEmptyError(f"Failed to load template from {url}")
+                raise TemplateEmptyError(f"템플릿 이미지를 디코딩할 수 없습니다: {url}")
 
             # 캐시에 저장
             self._template_cache[template_path] = template
             return template
 
         except requests.RequestException as e:
-            raise TemplateEmptyError(f"Failed to download template from {url}: {str(e)}")
+            raise TemplateEmptyError(f"템플릿 다운로드 실패 (파일이 서버에 없을 수 있음): {str(e)}")
         except Exception as e:
-            raise TemplateEmptyError(f"Error loading template {url}: {str(e)}")
+            raise TemplateEmptyError(f"템플릿 로드 중 오류 발생: {str(e)}")
 
     def load_templates(self, template_keys: list):
         """지정된 키에 해당하는 템플릿 이미지들을 로드
@@ -106,7 +120,7 @@ class TemplateService:
         """비밀번호 템플릿 로드"""
         templates = {}
         for password in password_list:
-            path = f'/{password}.PNG'
+            path = f'/{password}.png'
             template = self._load_template(path)
             if template is None:
                 raise TemplateEmptyError(f"비밀번호 템플릿 로드 실패: {path}")

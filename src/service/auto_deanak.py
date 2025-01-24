@@ -131,7 +131,7 @@ class AutoDeanak:
                         self.state.is_running = False
                         await self.remote.exit_program()
                         await asyncio.sleep(2)
-                        await self.remote.exit_remote()
+                        # await self.remote.exit_remote()
 
                         await self.api.send_complete(deanak_id)
 

@@ -4,7 +4,7 @@ from src import state
 import time
 
 class PasswordHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 35):
+    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 30):
         self.image_matcher = image_matcher
         self.input_controller = input_controller
         self.capture = capture
@@ -25,7 +25,7 @@ class PasswordHandler:
         """
         try:
             if not screen_state.password_passed:
-                self.input_controller.press_key("esc")
+                self.input_controller.press_key("a")
                 
                 if screen_state.get_count("password") > self.MAX_DETECTION_ATTEMPTS:
                     raise NoDetectionError(f"passwordScreen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")

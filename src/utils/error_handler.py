@@ -80,7 +80,7 @@ class ErrorHandler:
     NO_DETECT_GET_ALL_SCREEN_SCENE = "모두 받기 화면 탐지 실패(정렬 혹은 받기 버튼 탐지 실패 또는 대낙 받을 판매된 선수 없을 경우)"
     DEANAK_ERROR = "대낙 작업 중 오류 - 무한 로직(WHILE) 내"
     EMPTY_PASSWORD_TEMPLATE = "비밀번호 템플릿을 찾을 수 없습니다"
-
+    
     def __init__(self):
         self.log_dir = "logs/error"
         os.makedirs(self.log_dir, exist_ok=True)
@@ -88,17 +88,52 @@ class ErrorHandler:
         self.remote_pcs_dao = RemoteDao()
         self.unique_id = state.unique_id()
         self.api_instance = ApiClass()  # ApiClass 사용
+        self.user_message = {
+            '': [
+                self.TEMPLATE_EMPTY_ERROR,
+                self.NO_WORKER_ERROR,
+                self.CANT_FIND_PC_NUM_ERROR,
+                self.CANT_FIND_REMOTE_PROGRAM,
+                self.CONTROLLER_ERROR,
+                self.HANDLER_ERROR,
+                self.DEANAK_ERROR,
+                self.EMPTY_PASSWORD_TEMPLATE,
+                self.OTP_ERROR,
+            ],
+            '인식 횟수 초과': [self.OTP_OVER_TIME_DETECT],
+            '인증 시간 초과': [self.OTP_TIME_OUT],
+
+            '인게임 동시 접속': [self.SAME_START_ERROR_BY_ANYKEY_SCENE],
+            '이미 로그인되어 있는 계정': [self.DUPLICATE_CONNECTING_ERROR],
+            '고객이 중복 로그인을 시도': [self.SOMEONE_CONNECT_TRY_ERROR],
+            '인게임 동시 접속': [self.SAME_START_ERROR_BY_PASSWORD_SCENE],
+            '고객이 중복 OTP 시도': [self.DUPLICATE_OTP_CHECK_ERROR],
+
+            '잘못된 비밀번호 입력': [self.WRONG_PASSWORD_ERROR],
+            'OTP': [self.NO_DETECT_OTP_SCENE],
+            '비밀번호 화면': [self.NO_DETECT_PASSWORD_SCENE],
+            '공지 화면': [self.NO_DETECT_NOTICE_SCENE],
+            '팀선택 화면': [self.NO_DETECT_TEAM_SELECT_SCENE],
+            '구매 화면': [self.NO_DETECT_PURCHASE_SCREEN_SCENE],
+            '메인 화면': [self.NO_DETECT_MAIN_SCREEN_SCENE],
+            '마켓 화면': [self.NO_DETECT_MARKET_SCREEN_SCENE],
+            '이적 시장의 판매 리스트 화면': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
+            '모두 받기 화면': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
+        }
         self.error_messages = {
-            '프로그램 오류': [
+            '프로그램': [
                 self.API_CALL_ERROR,
                 self.TEMPLATE_EMPTY_ERROR,
                 self.NO_WORKER_ERROR,
                 self.CANT_FIND_PC_NUM_ERROR,
                 self.CANT_FIND_REMOTE_PROGRAM,
                 self.CONTROLLER_ERROR,
-                self.HANDLER_ERROR
+                self.HANDLER_ERROR,
+                self.DEANAK_ERROR,
+                self.EMPTY_PASSWORD_TEMPLATE,
+                self.OTP_ERROR
             ],
-            '중복 로그인 오류': [
+            '중복 로그인': [
                 self.SAME_START_ERROR_BY_ANYKEY_SCENE,
                 self.DUPLICATE_CONNECTING_ERROR,
                 self.SAME_START_ERROR_BY_PASSWORD_SCENE,
@@ -106,20 +141,27 @@ class ErrorHandler:
                 self.DUPLICATE_OTP_CHECK_ERROR
             ],
             'OTP': [
-                self.NO_DETECT_OTP_SCENE,
                 self.OTP_OVER_TIME_DETECT,
                 self.OTP_TIME_OUT,
-                self.OTP_ERROR
             ],
-            '비밀번호 오류': [self.WRONG_PASSWORD_ERROR],
-            '게임실행 오류': [self.NO_DETECT_PASSWORD_SCENE],
-            '팀 선택 화면 오류': [self.NO_DETECT_NOTICE_SCENE],
-            '메인 화면 오류': [self.NO_DETECT_MAIN_SCREEN_SCENE],
-            '마켓 화면 오류': [self.NO_DETECT_MARKET_SCREEN_SCENE],
-            '이적 시장의 판매 리스트 화면 오류': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
-            '모두 받기 화면 오류': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
-            '대낙 작업 중 오류': [self.DEANAK_ERROR],
-            '비밀번호 템플릿을 찾을 수 없습니다': [self.EMPTY_PASSWORD_TEMPLATE]
+            '비밀번호': [self.WRONG_PASSWORD_ERROR],
+            '탐지 실패':[
+                self.NO_DETECT_OTP_SCENE,
+                self.NO_DETECT_PASSWORD_SCENE,
+                self.NO_DETECT_NOTICE_SCENE,
+                self.NO_DETECT_TEAM_SELECT_SCENE,
+                self.NO_DETECT_MARKET_SCREEN_SCENE,
+                self.NO_DETECT_GET_ITEM_SCREEN_SCENE,
+                self.NO_DETECT_GET_ALL_SCREEN_SCENE
+            ],
+            # '게임실행 오류': [self.NO_DETECT_PASSWORD_SCENE],
+            # '팀 선택 화면 오류': [self.NO_DETECT_NOTICE_SCENE],
+            # '메인 화면 오류': [self.NO_DETECT_MAIN_SCREEN_SCENE],
+            # '마켓 화면 오류': [self.NO_DETECT_MARKET_SCREEN_SCENE],
+            # '이적 시장의 판매 리스트 화면 오류': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
+            # '모두 받기 화면 오류': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
+            # '대낙 작업 중 오류': [self.DEANAK_ERROR],
+            # '비밀번호 템플릿을 찾을 수 없습니다': [self.EMPTY_PASSWORD_TEMPLATE]
         }
 
     def setup_logger(self):
@@ -160,13 +202,15 @@ class ErrorHandler:
             # 사용자에게 알림
             if user_message:
                 error_key = self.get_error_key(user_message)
+                message_key = self.get_message_key(user_message)
+
                 if error_key:
-                    print(f"{error_key}: {user_message}")
+                    print(f"{error_key}: {message_key}")
                     deanak_id = context.get('deanak_id')
                     if deanak_id is None:
                         raise MessageSendFail("deanak_id가 없음")
 
-                    asyncio.create_task(self.api_instance.send_error(deanak_id, error_key, user_message))
+                    asyncio.create_task(self.api_instance.send_error(deanak_id, error_key, message_key))
 
             return {
                 'error': str(error),
@@ -181,12 +225,18 @@ class ErrorHandler:
             print(f"ErrorHandler에서 오류 발생: {e}")
             return None
 
+    def get_message_key(self, message):
+        for key, value in self.user_message.items():
+            if message in value:
+                return key
+        return ""
+
     def get_error_key(self, message):
         """주어진 에러 메시지에 해당하는 키를 반환합니다."""
         for key, value in self.error_messages.items():
             if message in value:
                 return key
-        return None
+        return ""
 
     def get_error_logs(self, date=None):
         """에러 로그 조회"""

@@ -45,7 +45,9 @@ async def do_task(request, deanak_info:dict=None):
             # 작업 상태 업데이트
             async with get_db_context() as db:
                 await remote_pcs_dao.update_tasks_request(db, server_id, "working")
+                
             await api.send_start(deanak_info['deanak_id'])
+            print("state = working으로 변경")
 
             await asyncio.sleep(15)
             if not await do_otp(deanak_info, server_id):
@@ -55,14 +57,16 @@ async def do_task(request, deanak_info:dict=None):
             return await do_task("deanak_start", deanak_info)
 
         if request == "deanak_start":
-            if deanak_info['otp'] == "0":
+            
+            if not deanak_info['otp']:
                 # 작업 상태 업데이트
                 async with get_db_context() as db:
                     await remote_pcs_dao.update_tasks_request(db, server_id, "working")
                 await api.send_start(deanak_info['deanak_id'])
+                print("state = working으로 변경")
 
             print("게임이 켜지기까지 기다리는 중...")
-            await asyncio.sleep(5)
+            await asyncio.sleep(0.5)
             if not await do_deanak(deanak_info, server_id):
                 return False
         

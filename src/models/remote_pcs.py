@@ -6,7 +6,7 @@ class RemotePcs(Base):
     __tablename__ = 'remote_pcs'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
-    server_id = Column(String(45), nullable=False)
+    server_id = Column(String(100), nullable=False)
     service = Column(String(255), nullable=False, default="일반대낙")
     worker_id = Column(String(255), nullable=True)
     state = Column(String(50), nullable=False)
