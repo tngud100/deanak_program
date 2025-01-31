@@ -33,11 +33,11 @@ class TeamSelectHandler:
                 top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_screen'], threshold=0.8)
                 if top_left and bottom_right:
                     # 팀 선택 텍스트 탐지
-                    top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_text'], threshold=0.8)
+                    top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_icon'], threshold=0.8)
                     
                     if top_left and bottom_right:
                         box_height = bottom_right[1] - top_left[1]
-                        offset_y = top_left[1] + box_height * 5
+                        offset_y = top_left[1] + box_height * 10
                         
                         self.input_controller.click(random.randint(top_left[0], bottom_right[0]), offset_y)
                         screen_state.team_select_passed = True
