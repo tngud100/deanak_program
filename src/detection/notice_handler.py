@@ -32,7 +32,7 @@ class NoticeHandler:
                 if self.image_matcher.process_template(screen, 'team_select_screen', loaded_templates):
                     screen_state.notice_passed = True
                     print("공지사항 확인 완료")
-                    time.sleep(1)
+                    # time.sleep(1)
                     return True
             
             return False

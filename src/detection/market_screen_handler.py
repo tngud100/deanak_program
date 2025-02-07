@@ -1,3 +1,4 @@
+from cv2 import threshold
 from src.utils.error_handler import NoDetectionError, ErrorHandler
 from src.models.screen_state import ScreenState
 from src import state
@@ -5,9 +6,8 @@ import time
 
 
 class MarketScreenHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS=3):
+    def __init__(self, image_matcher, capture, MAX_DETECTION_ATTEMPTS=12):
         self.image_matcher = image_matcher
-        self.input_controller = input_controller
         self.capture = capture
         self.MAX_DETECTION_ATTEMPTS = MAX_DETECTION_ATTEMPTS
         self.state = state
@@ -26,17 +26,18 @@ class MarketScreenHandler:
         try:
             if not screen_state.market_screen_passed and screen_state.main_screen_passed:
                 if screen_state.get_count("market_screen") > self.MAX_DETECTION_ATTEMPTS:
-                    raise NoDetectMarket(f"market_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
+                    raise NoDetectionError(f"market_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['market_screen'])
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['market_screen'], threshold=0.95)
+                print(f"감지 완료: screen_type: market_screen, top_left: {top_left}, bottom_right: {bottom_right}")
                 if top_left and bottom_right:
                     roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
-                    if self.image_matcher.process_template(screen, 'list_btn', loaded_templates, click=True, roi=roi):
+                    if self.image_matcher.process_template(screen, 'list_btn', loaded_templates, click=True, roi=roi, threshold=0.8):
                         screen_state.market_screen_passed = True
                         print("마켓 화면 처리 완료")
-                        time.sleep(2.5)
+                        time.sleep(1)
                         return True
-            
+        
             return False
 
         except NoDetectionError as e:

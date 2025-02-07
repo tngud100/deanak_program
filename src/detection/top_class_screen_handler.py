@@ -4,9 +4,8 @@ from src import state
 import time
 
 class TopClassScreenHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS=3):
+    def __init__(self, image_matcher, capture, MAX_DETECTION_ATTEMPTS=2):
         self.image_matcher = image_matcher
-        self.input_controller = input_controller
         self.capture = capture
         self.MAX_DETECTION_ATTEMPTS = MAX_DETECTION_ATTEMPTS
         self.state = state

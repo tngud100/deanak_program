@@ -1,4 +1,4 @@
-from src.utils.error_handler import DuplicateLoginError, NoDetectionError, DeanakError, WrongPasswordError, APICallError, TemplateEmptyError
+from src.utils.error_handler import NoDetectionPCIconError, DuplicateLoginError, NoDetectionError, DeanakError, WrongPasswordError, APICallError, TemplateEmptyError
 from src.utils.image_matcher import ImageMatcher
 from src.utils.input_controller import InputController
 from src.utils.remote_controller import RemoteController
@@ -21,6 +21,7 @@ from src.detection.get_item_screen_handler import GetItemScreenHandler
 from src.detection.get_all_screen_handler import GetAllScreenHandler
 from src.detection.top_class_screen_handler import TopClassScreenHandler
 from src.detection.duplicate_login_handler import DuplicateLoginHandler
+from src.detection.exit_game_handler import ExitGameHandler
 import asyncio
 
 class AutoDeanak:
@@ -32,7 +33,7 @@ class AutoDeanak:
         self.capture = capture
         self.error_handler = ErrorHandler()
         self.state = state
-        self.MAX_DETECTION_ATTEMPTS = 5
+        self.MAX_DETECTION_ATTEMPTS = 8
         self.screen_state = ScreenState()
         self.remote_pcs_dao = remote_pcs_dao
         self.api = Api()
@@ -41,13 +42,14 @@ class AutoDeanak:
         self.password_handler = PasswordHandler(self.image_matcher, self.input_controller, self.capture)
         self.notice_handler = NoticeHandler(self.image_matcher, self.input_controller, self.capture)
         self.team_select_handler = TeamSelectHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.purchase_screen_handler = PurchaseScreenHandler(self.image_matcher, self.input_controller, self.capture)
-        self.main_screen_handler = MainScreenHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.market_screen_handler = MarketScreenHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.get_item_screen_handler = GetItemScreenHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.get_all_screen_handler = GetAllScreenHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.top_class_screen_handler = TopClassScreenHandler(self.image_matcher, self.input_controller, self.capture)
-        self.duplicate_login_handler = DuplicateLoginHandler(self.image_matcher, self.input_controller, self.capture)
+        self.purchase_screen_handler = PurchaseScreenHandler(self.image_matcher, self.capture)
+        self.main_screen_handler = MainScreenHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.market_screen_handler = MarketScreenHandler(self.image_matcher, self.capture)
+        self.get_item_screen_handler = GetItemScreenHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.get_all_screen_handler = GetAllScreenHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.top_class_screen_handler = TopClassScreenHandler(self.image_matcher, self.capture)
+        self.duplicate_login_handler = DuplicateLoginHandler(self.image_matcher, self.capture)
+        self.exit_game_handler = ExitGameHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
 
     async def _getter_info(self, deanak_info):
         worker_id = deanak_info['worker_id']
@@ -80,11 +82,12 @@ class AutoDeanak:
                     screen = self.capture.screen_capture()
                     print("capturing...")
 
-                    self.duplicate_login_handler.check_duplicate_login(screen, loaded_templates, deanak_id)
                     
                     if not self.screen_state.password_passed:
+                        self.duplicate_login_handler.check_duplicate_login(screen, loaded_templates, deanak_id)
                         self.screen_state.increment_count("password")
                     if not self.screen_state.notice_passed and self.screen_state.password_passed:
+                        self.duplicate_login_handler.check_duplicate_login(screen, loaded_templates, deanak_id)
                         self.screen_state.increment_count("notice")
                     if not self.screen_state.team_select_passed and self.screen_state.notice_passed:
                         self.screen_state.increment_count("team_select")
@@ -98,7 +101,7 @@ class AutoDeanak:
                         self.screen_state.increment_count("get_item_screen")
                     if not self.screen_state.top_class_screen_passed and self.screen_state.get_all_btn_screen_passed:
                         self.screen_state.increment_count("top_class_screen")
-                    
+
                     if self.password_handler.handle_password_screen(screen, loaded_templates, password_list, self.screen_state, deanak_id):
                         continue
 
@@ -125,8 +128,11 @@ class AutoDeanak:
 
                     if self.top_class_screen_handler.handle_top_class_screen(screen, loaded_templates, self.screen_state):
                         continue
-                
+
                     if self.screen_state.top_class_screen_passed:
+                        self.exit_game_handler.handle_exit_game_screen(screen, loaded_templates, self.screen_state, deanak_id)
+                    
+                    if self.screen_state.exit_modal_screen_passed:
                         print("대낙 완료")
                         self.state.is_running = False
                         await self.remote.exit_program()
@@ -142,7 +148,7 @@ class AutoDeanak:
                     await asyncio.sleep(2)
 
 
-                except (NoDetectionError, WrongPasswordError, TemplateEmptyError, APICallError, DuplicateLoginError) as e:
+                except (NoDetectionError, WrongPasswordError, TemplateEmptyError, APICallError, DuplicateLoginError, NoDetectionPCIconError) as e:
                     async with get_db_context() as db:
                         await self.remote_pcs_dao.update_tasks_request(db, server_id, "stopped")
                     self.state.is_running = False

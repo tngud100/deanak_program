@@ -4,9 +4,8 @@ from src import state
 import time
 
 class PurchaseScreenHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS=3):
+    def __init__(self, image_matcher, capture, MAX_DETECTION_ATTEMPTS=2):
         self.image_matcher = image_matcher
-        self.input_controller = input_controller
         self.capture = capture
         self.MAX_DETECTION_ATTEMPTS = MAX_DETECTION_ATTEMPTS
         self.state = state
@@ -35,7 +34,7 @@ class PurchaseScreenHandler:
                     if self.image_matcher.process_template(screen, 'purchase_cancel_btn', loaded_templates, click=True, roi=roi):
                         screen_state.purchase_screen_passed = True
                         print("구매 화면 처리 완료")
-                        time.sleep(1)
+                        time.sleep(0.5)
                         return True
             
             return False

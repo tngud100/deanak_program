@@ -39,3 +39,4 @@ tests
 *.bak
 *.swp
 *~
+unique_id.txt

@@ -30,20 +30,20 @@ class TeamSelectHandler:
                     raise NoDetectionError(f"team_select_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
                 # 팀 선택 화면 탐지
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_screen'], threshold=0.8)
-                if top_left and bottom_right:
+                # top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_screen'], threshold=0.8)
+                # if top_left and bottom_right:
                     # 팀 선택 텍스트 탐지
-                    top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_icon'], threshold=0.8)
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_icon'], threshold=0.8)
+                
+                if top_left and bottom_right:
+                    box_height = bottom_right[1] - top_left[1]
+                    offset_y = top_left[1] + box_height * 10
                     
-                    if top_left and bottom_right:
-                        box_height = bottom_right[1] - top_left[1]
-                        offset_y = top_left[1] + box_height * 10
-                        
-                        self.input_controller.click(random.randint(top_left[0], bottom_right[0]), offset_y)
-                        screen_state.team_select_passed = True
-                        print("팀 선택 완료")
-                        time.sleep(5)
-                        return True
+                    self.input_controller.click(random.randint(top_left[0], bottom_right[0] - 10), offset_y)
+                    screen_state.team_select_passed = True
+                    print("팀 선택 완료")
+                    time.sleep(2)
+                    return True
             
             return False
 

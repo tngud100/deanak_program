@@ -105,6 +105,7 @@ class ImageMatcher:
                 random_x = random.randint(top_left[0] + _range, bottom_right[0] - _range)
                 random_y = random.randint(top_left[1] + _range, bottom_right[1] - _range)
                 self.input_controller.click(random_x, random_y)
+            print(f"템플릿 '{template_key} : {top_left} ~ {bottom_right}' 감지 성공")
             return True
         return False
 

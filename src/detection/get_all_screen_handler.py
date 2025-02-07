@@ -4,9 +4,8 @@ from src import state
 import time
 
 class GetAllScreenHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS=3):
+    def __init__(self, image_matcher, capture, MAX_DETECTION_ATTEMPTS=3):
         self.image_matcher = image_matcher
-        self.input_controller = input_controller
         self.capture = capture
         self.MAX_DETECTION_ATTEMPTS = MAX_DETECTION_ATTEMPTS
         self.state = state
@@ -34,7 +33,7 @@ class GetAllScreenHandler:
                         roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
                         if self.image_matcher.process_template(screen, 'arrange_btn', loaded_templates, click=True, roi=roi):
                             screen_state.arrange_btn_screen_passed = True
-                            time.sleep(3)
+                            time.sleep(2)
                             print("정렬 버튼 클릭 완료")
 
                 if not screen_state.get_all_btn_screen_passed and screen_state.arrange_btn_screen_passed:
@@ -48,7 +47,7 @@ class GetAllScreenHandler:
                         if self.image_matcher.process_template(screen, 'get_all_btn', loaded_templates, click=True, roi=roi):
                             screen_state.get_all_btn_screen_passed = True
                             print("모두 받기 처리 완료")
-                            time.sleep(1)
+                            # time.sleep(1)
                             return True
             
             return False

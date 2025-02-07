@@ -1,12 +1,10 @@
 from src.utils.error_handler import DuplicateLoginError, ErrorHandler
 from src.utils.image_matcher import ImageMatcher
-from src.utils.input_controller import InputController
 from src.utils.capture import CaptureUtil
 
 class DuplicateLoginHandler:
-    def __init__(self, image_matcher: ImageMatcher, input_controller: InputController, capture: CaptureUtil):
+    def __init__(self, image_matcher: ImageMatcher, capture: CaptureUtil):
         self.image_matcher = image_matcher
-        self.input_controller = input_controller
         self.capture = capture
         self.error_handler = ErrorHandler()
 

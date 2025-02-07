@@ -4,9 +4,8 @@ from src import state
 import time
 
 class GetItemScreenHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS=3):
+    def __init__(self, image_matcher, capture, MAX_DETECTION_ATTEMPTS=3):
         self.image_matcher = image_matcher
-        self.input_controller = input_controller
         self.capture = capture
         self.MAX_DETECTION_ATTEMPTS = MAX_DETECTION_ATTEMPTS
         self.state = state
@@ -25,7 +24,7 @@ class GetItemScreenHandler:
         try:
             if not screen_state.get_item_screen_passed and screen_state.market_screen_passed:
                 if screen_state.get_count("get_item_screen") > self.MAX_DETECTION_ATTEMPTS:
-                    raise NoDetectionGetItem(f"get_item_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
+                    raise NoDetectionError(f"get_item_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
                 top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['get_item_screen'])
                 if top_left and bottom_right:
@@ -33,7 +32,7 @@ class GetItemScreenHandler:
                     if self.image_matcher.process_template(screen, 'get_item_btn', loaded_templates, click=True, roi=roi):
                         screen_state.get_item_screen_passed = True
                         print("아이템 획득 화면 처리 완료")
-                        time.sleep(2.5)
+                        time.sleep(1)
                         return True
             
             return False

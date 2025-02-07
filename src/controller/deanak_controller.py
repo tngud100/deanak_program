@@ -66,7 +66,7 @@ async def do_task(request, deanak_info:dict=None):
                 print("state = working으로 변경")
 
             print("게임이 켜지기까지 기다리는 중...")
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(5)
             if not await do_deanak(deanak_info, server_id):
                 return False
         

@@ -26,6 +26,8 @@ class APICallError(Exception):
     pass
 class NoDetectionError(Exception):
     pass
+class NoDetectionPCIconError(Exception):
+    pass
 class TemplateEmptyError(Exception):
     pass
 class NoWorkerError(Exception):
@@ -75,9 +77,11 @@ class ErrorHandler:
     NO_DETECT_TEAM_SELECT_SCENE = "팀선택 화면 탐지 실패"
     NO_DETECT_PURCHASE_SCREEN_SCENE = "구매 화면 탐지 실패"
     NO_DETECT_MAIN_SCREEN_SCENE = "메인 화면 탐지 실패(이적 시장 버튼 탐지 실패)"
+    NO_DETECT_PC_ICON = "PC 스티커 탐지 실패"
     NO_DETECT_MARKET_SCREEN_SCENE = "마켓 화면 탐지 실패(판매 리스트 버튼 탐지 실패 혹은 비정상 감지)"
     NO_DETECT_GET_ITEM_SCREEN_SCENE = "이적 시장의 판매 리스트 화면 탐지 실패(모두 받기 버튼 탐지 실패)"
     NO_DETECT_GET_ALL_SCREEN_SCENE = "모두 받기 화면 탐지 실패(정렬 혹은 받기 버튼 탐지 실패 또는 대낙 받을 판매된 선수 없을 경우)"
+    NO_DETECT_EXIT_GAME_SCREEN_SCENE = "게임 종료 화면 탐지 실패(get_item, main, team, exit_modal 중 탐지 실패)"
     DEANAK_ERROR = "대낙 작업 중 오류 - 무한 로직(WHILE) 내"
     EMPTY_PASSWORD_TEMPLATE = "비밀번호 템플릿을 찾을 수 없습니다"
     
@@ -112,6 +116,7 @@ class ErrorHandler:
             '잘못된 비밀번호 입력': [self.WRONG_PASSWORD_ERROR],
             'OTP': [self.NO_DETECT_OTP_SCENE],
             '비밀번호 화면': [self.NO_DETECT_PASSWORD_SCENE],
+            'PC방 아이콘': [self.NO_DETECT_PC_ICON],
             '공지 화면': [self.NO_DETECT_NOTICE_SCENE],
             '팀선택 화면': [self.NO_DETECT_TEAM_SELECT_SCENE],
             '구매 화면': [self.NO_DETECT_PURCHASE_SCREEN_SCENE],
@@ -119,6 +124,7 @@ class ErrorHandler:
             '마켓 화면': [self.NO_DETECT_MARKET_SCREEN_SCENE],
             '이적 시장의 판매 리스트 화면': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
             '모두 받기 화면': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
+            '게임 종료 화면': [self.NO_DETECT_EXIT_GAME_SCREEN_SCENE],
         }
         self.error_messages = {
             '프로그램': [
@@ -149,10 +155,12 @@ class ErrorHandler:
                 self.NO_DETECT_OTP_SCENE,
                 self.NO_DETECT_PASSWORD_SCENE,
                 self.NO_DETECT_NOTICE_SCENE,
+                self.NO_DETECT_PC_ICON,
                 self.NO_DETECT_TEAM_SELECT_SCENE,
                 self.NO_DETECT_MARKET_SCREEN_SCENE,
                 self.NO_DETECT_GET_ITEM_SCREEN_SCENE,
-                self.NO_DETECT_GET_ALL_SCREEN_SCENE
+                self.NO_DETECT_GET_ALL_SCREEN_SCENE,
+                self.NO_DETECT_EXIT_GAME_SCREEN_SCENE
             ],
             # '게임실행 오류': [self.NO_DETECT_PASSWORD_SCENE],
             # '팀 선택 화면 오류': [self.NO_DETECT_NOTICE_SCENE],
