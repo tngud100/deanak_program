@@ -18,9 +18,9 @@ from src.utils.capture import CaptureUtil
 from src.utils.input_controller import InputController
 
 # 공통으로 사용할 객체들 초기화
-image_matcher = ImageMatcher()
 capture = CaptureUtil()
 input_controller = InputController()
+image_matcher = ImageMatcher(input_controller)
 remote = RemoteController()
 error_handler = ErrorHandler()
 remote_pcs_dao = RemoteDao()
@@ -40,14 +40,21 @@ async def do_task(request, deanak_info:dict=None):
     context = {"deanak_id": deanak_info['deanak_id'], "worker_id": deanak_info['worker_id']}
     try:
         server_id = await unique_id.read_unique_id()
-            
-        if request == "otp_check":
-            # 작업 상태 업데이트
+
+        if deanak_info['login_type'] == "일회용":
             async with get_db_context() as db:
                 await remote_pcs_dao.update_tasks_request(db, server_id, "working")
-                
+                print("state = working으로 변경")
             await api.send_start(deanak_info['deanak_id'])
-            print("state = working으로 변경")
+            await asyncio.sleep(10)
+            
+        if request == "otp_check":
+            if not deanak_info['login_type'] == "일회용":
+                # 작업 상태 업데이트
+                async with get_db_context() as db:
+                    await remote_pcs_dao.update_tasks_request(db, server_id, "working")
+                await api.send_start(deanak_info['deanak_id'])
+                print("state = working으로 변경")
 
             await asyncio.sleep(15)
             if not await do_otp(deanak_info, server_id):
@@ -58,7 +65,7 @@ async def do_task(request, deanak_info:dict=None):
 
         if request == "deanak_start":
             
-            if not deanak_info['otp']:
+            if not deanak_info['otp'] or not deanak_info['login_type'] == "일회용":
                 # 작업 상태 업데이트
                 async with get_db_context() as db:
                     await remote_pcs_dao.update_tasks_request(db, server_id, "working")

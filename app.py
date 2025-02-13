@@ -78,9 +78,9 @@ async def cleanup_resources(is_shutting_down=False):
         unique_id_value = await unique_id_instance.read_unique_id()
 
         # DB 정리
-        async with get_db_context() as db:
-            await RemoteDao.delete_remote_pc_by_server_id(db, unique_id_value)
-            print("DB에서 원격 PC 정보 제거 완료")
+        # async with get_db_context() as db:
+        #     await RemoteDao.delete_remote_pc_by_server_id(db, unique_id_value)
+        #     print("DB에서 원격 PC 정보 제거 완료")
         if async_engine:
             await async_engine.dispose()
             print("DB 엔진 정리 완료")

@@ -1,17 +1,19 @@
-from src.utils.error_handler import NoDetectionError, WrongPasswordError, TemplateEmptyError, ErrorHandler
+from src.detection.duplicate_login_handler import DuplicateLoginHandler
+from src.utils.error_handler import DuplicateLoginError, NoDetectionError, WrongPasswordError, TemplateEmptyError, ErrorHandler
 from src.models.screen_state import ScreenState
 from src import state
 import time
 
 class PasswordHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 12):
+    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 5):
         self.image_matcher = image_matcher
         self.input_controller = input_controller
         self.capture = capture
         self.MAX_DETECTION_ATTEMPTS = MAX_DETECTION_ATTEMPTS
         self.state = state
         self.error_handler = ErrorHandler()
-
+        self.duplicate_login_handler = DuplicateLoginHandler(self.image_matcher, self.capture)
+        
     def handle_password_screen(self, screen, loaded_templates, password_list, screen_state: ScreenState, deanak_id):
         """비밀번호 화면을 처리합니다.
         Args:
@@ -24,9 +26,8 @@ class PasswordHandler:
             bool: 처리 성공 여부
         """
         try:
-            if not screen_state.password_passed:
-                self.input_controller.hotkey("ctrl")
-                
+            if not screen_state.password_passed and screen_state.anykey_passed:
+
                 if screen_state.get_count("password") > self.MAX_DETECTION_ATTEMPTS:
                     raise NoDetectionError(f"passwordScreen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
@@ -39,18 +40,21 @@ class PasswordHandler:
                         
                         # 비밀번호 입력스크린 감지
                         self.image_matcher.process_template(screen, template_key, loaded_templates['password_templates'], click=True, roi=roi)
-                        time.sleep(1)
+                        time.sleep(0.5)
 
                     # 비밀번호 확인 클릭
                     if self.image_matcher.process_template(screen, 'password_confirm', loaded_templates, click=True, roi=roi):
-                        time.sleep(3)
+                        time.sleep(1)
                         for i in range(3):
                             screen = self.capture.screen_capture()
                             time.sleep(1)
                             if self.image_matcher.process_template(screen, 'wrong_password', loaded_templates, threshold=0.8, roi=roi):
                                 raise WrongPasswordError("비밀번호 오류")
                         
+                        time.sleep(1)
+                        self.duplicate_login_handler.check_duplicate_login(screen, loaded_templates, deanak_id)
                         screen_state.password_passed = True
+
                         print("비밀번호 입력 완료")
                         return True
             
@@ -67,4 +71,7 @@ class PasswordHandler:
 
         except TemplateEmptyError as e:
             self.error_handler.handle_error(e, {"deanak_id" : deanak_id}, user_message=self.error_handler.EMPTY_PASSWORD_TEMPLATE)
+            raise e
+
+        except DuplicateLoginError as e:
             raise e

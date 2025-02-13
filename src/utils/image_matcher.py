@@ -6,10 +6,10 @@ from src.utils.error_handler import ErrorHandler
 from src.utils.input_controller import InputController
 
 class ImageMatcher:
-    def __init__(self):
+    def __init__(self, input_controller: InputController):
         self.error_handler = ErrorHandler()
         self.reader = easyocr.Reader(['en','ko'])  # OCR 리더 초기화
-        self.input_controller = InputController()
+        self.input_controller = input_controller
 
     def detect_template(self, screen, templates, threshold=0.6, roi=None):
         """이미지에서 템플릿 위치 탐지
@@ -26,10 +26,14 @@ class ImageMatcher:
         if not isinstance(templates, list):
             templates = [templates]
 
+        # ROI가 설정된 경우, 해당 영역만 추출
+        original_screen = screen.copy()
         if roi is not None:
-            # ROI가 설정된 경우, 해당 영역만 탐지 대상으로 자름
-            screen = screen[roi[1]:roi[3], roi[0]:roi[2]]
-
+            x1, y1, x2, y2 = roi
+            screen = original_screen[y1:y2, x1:x2]  # height(y), width(x) 순서로 슬라이싱
+            # print(f"ROI 적용: ({x1}, {y1}, {x2}, {y2})")
+            # print(f"잘린 이미지 크기: {screen.shape}")
+        
         found = None
         
         # 템플릿 리스트를 순차적으로 탐지 시도
@@ -37,42 +41,43 @@ class ImageMatcher:
             template_height, template_width = template.shape[:2]
             found = None
 
+            # 템플릿이 ROI보다 큰 경우 스킵
+            if roi is not None and (template_height > screen.shape[0] or template_width > screen.shape[1]):
+                print(f"[DEBUG] 템플릿 크기({template_width}x{template_height})가 ROI 크기({screen.shape[1]}x{screen.shape[0]})보다 큼 - 스킵")
+                continue
+
             # 다중 스케일 템플릿 매칭을 위한 루프
-            for scale in np.linspace(0.8, 1.0, 10)[::-1]:  # 스케일 범위와 단계 수 조정
+            for scale in np.linspace(0.8, 1.0, 10)[::-1]:
                 resized_template_width = int(template_width * scale)
                 resized_template_height = int(template_height * scale)
 
-                resized = cv2.resize(template, (resized_template_width, resized_template_height))
-
-                r = template_width / float(resized.shape[1])  # 비율 계산
-
-                # 템플릿 크기가 화면을 초과하면 무시
-                if resized.shape[0] > screen.shape[0] or resized.shape[1] > screen.shape[1]:
+                # 리사이즈된 템플릿이 ROI보다 큰 경우 스킵
+                if roi is not None and (resized_template_height > screen.shape[0] or resized_template_width > screen.shape[1]):
                     continue
 
+                resized = cv2.resize(template, (resized_template_width, resized_template_height))
                 result = cv2.matchTemplate(screen, resized, cv2.TM_CCOEFF_NORMED)
-
                 _, max_val, _, max_loc = cv2.minMaxLoc(result)
 
                 if max_val >= threshold:
                     if found is None or max_val > found[0]:
-                        found = (max_val, max_loc, r, resized.shape[1], resized.shape[0])
+                        found = (max_val, max_loc, scale)
+                        print(f"[found] 매칭률:{max_val}, x좌표:({max_loc[0]}), y좌표:({max_loc[1]})")
 
             # 템플릿 위치 반환 (탐지에 성공한 경우)
             if found:
-                max_val, max_loc, r, resized_width, resized_height = found
-                start_x = int(max_loc[0] * r)
-                start_y = int(max_loc[1] * r)
-                end_x = start_x + int(resized_width * r)
-                end_y = start_y + int(resized_height * r)
-
+                max_val, max_loc, scale = found
+                start_x = int(max_loc[0])
+                start_y = int(max_loc[1])
+                end_x = start_x + int(template_width * scale)
+                end_y = start_y + int(template_height * scale)
 
                 # ROI가 설정된 경우, 전체 화면의 좌표로 변환
                 if roi is not None:
-                    start_x += roi[0]
-                    start_y += roi[1]
-                    end_x += roi[0]
-                    end_y += roi[1]
+                    start_x += x1
+                    start_y += y1
+                    end_x += x1
+                    end_y += y1
 
                 print(f"매칭률:{max_val}, x좌표:({start_x},{end_x}), y좌표:({start_y},{end_y})")
                 return (start_x, start_y), (end_x, end_y), max_val
@@ -80,7 +85,7 @@ class ImageMatcher:
         # 모든 템플릿을 탐지했으나 성공하지 못한 경우
         return None, None, None
 
-    def process_template(self, screen, template_key, templates, click=False, roi=None, _range=10, threshold=0.8):
+    def process_template(self, screen, template_key, templates, click=False, roi=None, _range=10, threshold=0.6):
         """템플릿을 감지하고 필요한 경우 클릭 수행
         
         Args:

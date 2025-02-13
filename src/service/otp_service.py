@@ -13,7 +13,7 @@ class OTPService:
         self.input = input
         self.template_service = template_service
     
-    async def _extract_otp(self, templates, max_attempts=10):
+    async def _extract_otp(self, templates, max_attempts=25):
         """화면에서 OTP 추출"""
         attempt = 0
         while attempt < max_attempts:

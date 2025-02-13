@@ -6,8 +6,9 @@ import numpy as np
 
 class CaptureUtil:
     def screen_capture(self, region=None):
-        """화면을 캡처하여 흑백 이미지로 반환합니다."""
+        """화면을 캡처하여 컬러 이미지로 반환합니다."""
         screenshot = pyautogui.screenshot()
         frame = np.array(screenshot)
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # PIL -> OpenCV 색상 공간 변환
+        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # PIL -> OpenCV 색상 공간 변환 흑백
+        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # PIL -> OpenCV 색상 공간 변환
         return frame

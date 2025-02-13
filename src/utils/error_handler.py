@@ -71,7 +71,8 @@ class ErrorHandler:
     SAME_START_ERROR_BY_PASSWORD_SCENE = "인게임 동시 접속으로 인한 오류(위치 : PasswordScene)"
     DUPLICATE_OTP_CHECK_ERROR = "OTP처리 중 다른 사용자가 중복으로 OTP 체크을 시도"
 
-    WRONG_PASSWORD_ERROR = "비밀번호 오류"
+    WRONG_PASSWORD_ERROR = "2차 비밀번호 틀림"
+    NO_DETECT_ANYKEY_SCENE = "첫번째 화면 탐지 실패"
     NO_DETECT_PASSWORD_SCENE = "비밀번호 화면 탐지 실패"
     NO_DETECT_NOTICE_SCENE = "공지 화면 탐지 실패"
     NO_DETECT_TEAM_SELECT_SCENE = "팀선택 화면 탐지 실패"
@@ -79,8 +80,8 @@ class ErrorHandler:
     NO_DETECT_MAIN_SCREEN_SCENE = "메인 화면 탐지 실패(이적 시장 버튼 탐지 실패)"
     NO_DETECT_PC_ICON = "PC 스티커 탐지 실패"
     NO_DETECT_MARKET_SCREEN_SCENE = "마켓 화면 탐지 실패(판매 리스트 버튼 탐지 실패 혹은 비정상 감지)"
-    NO_DETECT_GET_ITEM_SCREEN_SCENE = "이적 시장의 판매 리스트 화면 탐지 실패(모두 받기 버튼 탐지 실패)"
-    NO_DETECT_GET_ALL_SCREEN_SCENE = "모두 받기 화면 탐지 실패(정렬 혹은 받기 버튼 탐지 실패 또는 대낙 받을 판매된 선수 없을 경우)"
+    NO_DETECT_GET_ITEM_SCREEN_SCENE = "이적 시장의 판매 리스트 화면 탐지 실패(모두 받기 버튼 탐지 실패 또는 대낙 받을 판매된 선수 없을 경우)"
+    NO_DETECT_GET_ALL_SCREEN_SCENE = "모두 받기 화면 탐지 실패(정렬 혹은 받기 버튼 탐지 실패)"
     NO_DETECT_EXIT_GAME_SCREEN_SCENE = "게임 종료 화면 탐지 실패(get_item, main, team, exit_modal 중 탐지 실패)"
     DEANAK_ERROR = "대낙 작업 중 오류 - 무한 로직(WHILE) 내"
     EMPTY_PASSWORD_TEMPLATE = "비밀번호 템플릿을 찾을 수 없습니다"
@@ -113,17 +114,18 @@ class ErrorHandler:
             '인게임 동시 접속': [self.SAME_START_ERROR_BY_PASSWORD_SCENE],
             '고객이 중복 OTP 시도': [self.DUPLICATE_OTP_CHECK_ERROR],
 
-            '잘못된 비밀번호 입력': [self.WRONG_PASSWORD_ERROR],
+            '2차 비밀번호 틀림': [self.WRONG_PASSWORD_ERROR],
             'OTP': [self.NO_DETECT_OTP_SCENE],
+            '인게임 첫번째 화면': [self.NO_DETECT_ANYKEY_SCENE],
             '비밀번호 화면': [self.NO_DETECT_PASSWORD_SCENE],
             'PC방 아이콘': [self.NO_DETECT_PC_ICON],
             '공지 화면': [self.NO_DETECT_NOTICE_SCENE],
             '팀선택 화면': [self.NO_DETECT_TEAM_SELECT_SCENE],
             '구매 화면': [self.NO_DETECT_PURCHASE_SCREEN_SCENE],
             '메인 화면': [self.NO_DETECT_MAIN_SCREEN_SCENE],
-            '마켓 화면': [self.NO_DETECT_MARKET_SCREEN_SCENE],
-            '이적 시장의 판매 리스트 화면': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
-            '모두 받기 화면': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
+            '이적 시장 화면': [self.NO_DETECT_MARKET_SCREEN_SCENE],
+            '이적 시장의 판매 선수 리스트 화면': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
+            '모두받기 버튼 비활성화': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
             '게임 종료 화면': [self.NO_DETECT_EXIT_GAME_SCREEN_SCENE],
         }
         self.error_messages = {
@@ -153,6 +155,7 @@ class ErrorHandler:
             '비밀번호': [self.WRONG_PASSWORD_ERROR],
             '탐지 실패':[
                 self.NO_DETECT_OTP_SCENE,
+                self.NO_DETECT_ANYKEY_SCENE,
                 self.NO_DETECT_PASSWORD_SCENE,
                 self.NO_DETECT_NOTICE_SCENE,
                 self.NO_DETECT_PC_ICON,

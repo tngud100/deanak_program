@@ -19,18 +19,24 @@ class TemplateService:
             "otp_number": '/otpNumber.png',
             "otp_wrong": '/otpWrong.png',
             # 대낙 관련 템플릿
+            "anykey_screen": '/anykeyScreen.png',
             "password_screen": '/passwordScreen.png',
             "password_confirm": '/loginConfirm.png',
             "wrong_password": '/wrongPassword.png',
+            "notice": '/notice.png',
             "team_select_screen": '/selectTeam.png',
             "team_select_text": '/selectTeamText.png',
             "team_select_icon": '/selectTeamIcon.png',
-            "purchase_before_main_screen": '/beforeMainPurchases.PNG',
+            # "achivement_modal_before_main_screen": '/beforeMainAchivementModal.png',
+            # "achivement_modal_cancel_btn": '/AchivementModalCloseBtn.png',
+            "top_class_before_main_screen": '/beforeMainTopClass.png',
+            "purchase_before_main_screen": '/beforeMainPurchases.png',
             "purchase_cancel_btn": '/purchaseCloseBtn.png',
             "pc_icon": '/pcIcon.png',
             "pc_icon_bar": '/pcIconBar.png',
             "main_screen": '/mainScreen.png',
             "market_screen": '/marketScreen.png',
+            "market_full_screen": '/marketFullScreen.png',
             "market_btn": '/market.png',
             "get_item_screen": '/getItemScreen.png',
             "get_all_screen": '/getAllScreen.png',
@@ -75,12 +81,11 @@ class TemplateService:
                 response.raise_for_status()
             except requests.RequestException as e:
                 print(f"첫 번째 시도 실패 ({url}): {str(e)}")
-                # 첫 번째 시도 실패시 다른 확장자로 시도
-                base_path = template_path[:-4]  # 확장자 제거
+                # 확장자 체크 후 변경
                 if template_path.lower().endswith('.png'):
-                    alt_path = base_path + '.PNG'
-                else:
-                    alt_path = base_path + '.png'
+                    alt_path = template_path[:-4] + '.PNG'
+                elif template_path.endswith('.PNG'):
+                    alt_path = template_path[:-4] + '.png'
                 
                 url = f"{self.base_url}{alt_path}"
                 print(f"두 번째 시도 ({url})")
@@ -89,7 +94,7 @@ class TemplateService:
 
             # 이미지 데이터를 numpy array로 변환
             image_array = np.asarray(bytearray(response.content), dtype=np.uint8)
-            template = cv2.imdecode(image_array, cv2.IMREAD_GRAYSCALE)
+            template = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
 
             if template is None:
                 raise TemplateEmptyError(f"템플릿 이미지를 디코딩할 수 없습니다: {url}")
@@ -117,17 +122,19 @@ class TemplateService:
             
             try:
                 # 첫 번째 시도
-                template = cv2.imread(local_path, cv2.IMREAD_GRAYSCALE)
+                template = cv2.imread(local_path, cv2.IMREAD_COLOR)
                 if template is None:
-                    # 첫 번째 시도 실패시 다른 확장자로 시도
-                    base_path = local_path[:-4]  # 확장자 제거
+                    # 확장자 체크 후 변경
                     if local_path.lower().endswith('.png'):
-                        alt_path = base_path + '.PNG'
+                        alt_path = local_path[:-4] + '.PNG'
+                    elif local_path.endswith('.PNG'):
+                        alt_path = local_path[:-4] + '.png'
                     else:
-                        alt_path = base_path + '.png'
+                        # 다른 확장자인 경우 기본값으로 .png 사용
+                        alt_path = local_path[:-4] + '.png'
                     
                     print(f"첫 번째 시도 실패 ({local_path}), 두 번째 시도 ({alt_path})")
-                    template = cv2.imread(alt_path, cv2.IMREAD_GRAYSCALE)
+                    template = cv2.imread(alt_path, cv2.IMREAD_COLOR)
 
             except Exception as e:
                 print(f"이미지 로드 실패: {str(e)}")

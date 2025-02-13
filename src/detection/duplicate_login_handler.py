@@ -10,6 +10,8 @@ class DuplicateLoginHandler:
 
     def check_duplicate_login(self, screen, loaded_templates, deanak_id):
         try:
+            print("중복으로 로그인 체크")
+
             if self.image_matcher.process_template(screen, 'some_one_otp_pass_error', loaded_templates, threshold=0.8):
                 raise DuplicateLoginError(self.error_handler.DUPLICATE_OTP_CHECK_ERROR)
 

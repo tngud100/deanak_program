@@ -5,6 +5,7 @@ from typing import Dict
 class ScreenState:
     """화면 상태를 관리하는 클래스"""
     # 화면 통과 상태
+    anykey_passed: bool = False
     password_passed: bool = False
     notice_passed: bool = False
     team_select_passed: bool = False
@@ -16,6 +17,18 @@ class ScreenState:
     arrange_btn_screen_passed: bool = False
     get_all_btn_screen_passed: bool = False
     top_class_screen_passed: bool = False
+    # password_passed: bool = True
+    # notice_passed: bool = True
+    # team_select_passed: bool = True
+    # purchase_screen_passed: bool = True
+    # pc_icon_passed: bool = True
+    # main_screen_passed: bool = True
+    # market_screen_passed: bool = True
+    # get_item_screen_passed: bool = True
+    # arrange_btn_screen_passed: bool = True
+    # get_all_btn_screen_passed: bool = True
+    # top_class_screen_passed: bool = True
+
     exit_get_item_screen_passed: bool = False
     exit_main_screen_passed: bool = False
     exit_team_screen_passed: bool = False
@@ -27,6 +40,7 @@ class ScreenState:
     def __post_init__(self):
         if self.detection_counts is None:
             self.detection_counts = {
+                "anykey": 0,
                 "password": 0,
                 "notice": 0,
                 "team_select": 0,
@@ -62,6 +76,7 @@ class ScreenState:
 
     def reset_all(self) -> None:
         """모든 상태를 초기화합니다."""
+        self.anykey_passed = False
         self.password_passed = False
         self.notice_passed = False
         self.team_select_passed = False

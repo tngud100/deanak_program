@@ -4,12 +4,13 @@ from src import state
 import time
 
 class PurchaseScreenHandler:
-    def __init__(self, image_matcher, capture, MAX_DETECTION_ATTEMPTS=2):
+    def __init__(self, input_controller, image_matcher, capture, MAX_DETECTION_ATTEMPTS=3):
         self.image_matcher = image_matcher
         self.capture = capture
         self.MAX_DETECTION_ATTEMPTS = MAX_DETECTION_ATTEMPTS
         self.state = state
         self.error_handler = ErrorHandler()
+        self.input_controller = input_controller
 
     def handle_purchase_screen(self, screen, loaded_templates, screen_state: ScreenState):
         """구매 화면을 처리합니다.
@@ -30,12 +31,28 @@ class PurchaseScreenHandler:
                 top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['purchase_before_main_screen'])
                 print(f"구매 화면 존재 여부 확인 중...{screen_state.get_count("purchase_before_main_screen")}/{self.MAX_DETECTION_ATTEMPTS}")
                 if top_left and bottom_right:
-                    roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
-                    if self.image_matcher.process_template(screen, 'purchase_cancel_btn', loaded_templates, click=True, roi=roi):
-                        screen_state.purchase_screen_passed = True
-                        print("구매 화면 처리 완료")
-                        time.sleep(0.5)
-                        return True
+                    # roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
+                    # if self.image_matcher.process_template(screen, 'purchase_cancel_btn', loaded_templates, click=True, roi=roi):
+                    self.input_controller.press_key("esc")
+                    time.sleep(0.5)
+            
+                class_top_left, class_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['top_class_before_main_screen'])
+                print(f"탑클 화면 존재 여부 확인 중...{screen_state.get_count("purchase_before_main_screen")}/{self.MAX_DETECTION_ATTEMPTS}")
+                if class_top_left and class_bottom_right:
+                    self.input_controller.press_key("esc")
+                    time.sleep(0.5)
+                
+                # achivement_top_left, achievement_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['achivement_modal_before_main_screen'])
+                # print(f"업적 모달 화면 존재 여부 확인 중...{screen_state.get_count("purchase_before_main_screen")}/{self.MAX_DETECTION_ATTEMPTS}")
+                # if achivement_top_left and achievement_bottom_right:
+                #     roi = (achivement_top_left[0], achivement_top_left[1], achievement_bottom_right[0], achievement_bottom_right[1])
+                #     self.image_matcher.process_template(screen, 'achivement_modal_cancel_btn', loaded_templates, click=True, roi=roi)
+                #     time.sleep(0.5)
+            
+                # screen_state.purchase_screen_passed = True
+                # print("구매, 탑클 화면 처리 완료")
+                # time.sleep(0.5)
+                # return True
             
             return False
 

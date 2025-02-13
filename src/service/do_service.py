@@ -45,8 +45,8 @@ class DoService:
             
             # 타이머 설정
             start_time = asyncio.get_event_loop().time()
-            timeout_duration = 135  # 2분
-            renew_duration = 65
+            timeout_duration = 130  # 2분
+            renew_duration = 60
 
             async with get_db_context() as db:
                 pc_num = await self._validate_worker(db, server_id, worker_id)

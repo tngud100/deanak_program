@@ -1,3 +1,4 @@
+from src.detection.anykey_screen_handler import AnyKeyScreenHandler
 from src.utils.error_handler import NoDetectionPCIconError, DuplicateLoginError, NoDetectionError, DeanakError, WrongPasswordError, APICallError, TemplateEmptyError
 from src.utils.image_matcher import ImageMatcher
 from src.utils.input_controller import InputController
@@ -20,7 +21,7 @@ from src.detection.market_screen_handler import MarketScreenHandler
 from src.detection.get_item_screen_handler import GetItemScreenHandler
 from src.detection.get_all_screen_handler import GetAllScreenHandler
 from src.detection.top_class_screen_handler import TopClassScreenHandler
-from src.detection.duplicate_login_handler import DuplicateLoginHandler
+# from src.detection.duplicate_login_handler import DuplicateLoginHandler
 from src.detection.exit_game_handler import ExitGameHandler
 import asyncio
 
@@ -39,17 +40,17 @@ class AutoDeanak:
         self.api = Api()
 
         # 핸들러 초기화
-        self.password_handler = PasswordHandler(self.image_matcher, self.input_controller, self.capture)
-        self.notice_handler = NoticeHandler(self.image_matcher, self.input_controller, self.capture)
-        self.team_select_handler = TeamSelectHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.purchase_screen_handler = PurchaseScreenHandler(self.image_matcher, self.capture)
-        self.main_screen_handler = MainScreenHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.market_screen_handler = MarketScreenHandler(self.image_matcher, self.capture)
-        self.get_item_screen_handler = GetItemScreenHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
-        self.get_all_screen_handler = GetAllScreenHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.anykey_handler = AnyKeyScreenHandler(self.input_controller, self.image_matcher, self.capture)
+        self.password_handler = PasswordHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.notice_handler = NoticeHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.team_select_handler = TeamSelectHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.purchase_screen_handler = PurchaseScreenHandler(self.input_controller, self.image_matcher, self.capture)
+        self.main_screen_handler = MainScreenHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.market_screen_handler = MarketScreenHandler(self.input_controller, self.image_matcher, self.capture)
+        self.get_item_screen_handler = GetItemScreenHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.get_all_screen_handler = GetAllScreenHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
         self.top_class_screen_handler = TopClassScreenHandler(self.image_matcher, self.capture)
-        self.duplicate_login_handler = DuplicateLoginHandler(self.image_matcher, self.capture)
-        self.exit_game_handler = ExitGameHandler(self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        self.exit_game_handler = ExitGameHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
 
     async def _getter_info(self, deanak_info):
         worker_id = deanak_info['worker_id']
@@ -83,11 +84,11 @@ class AutoDeanak:
                     print("capturing...")
 
                     
-                    if not self.screen_state.password_passed:
-                        self.duplicate_login_handler.check_duplicate_login(screen, loaded_templates, deanak_id)
+                    if not self.screen_state.anykey_passed:
+                        self.screen_state.increment_count("anykey")
+                    if not self.screen_state.password_passed and self.screen_state.anykey_passed:
                         self.screen_state.increment_count("password")
                     if not self.screen_state.notice_passed and self.screen_state.password_passed:
-                        self.duplicate_login_handler.check_duplicate_login(screen, loaded_templates, deanak_id)
                         self.screen_state.increment_count("notice")
                     if not self.screen_state.team_select_passed and self.screen_state.notice_passed:
                         self.screen_state.increment_count("team_select")
@@ -101,6 +102,9 @@ class AutoDeanak:
                         self.screen_state.increment_count("get_item_screen")
                     if not self.screen_state.top_class_screen_passed and self.screen_state.get_all_btn_screen_passed:
                         self.screen_state.increment_count("top_class_screen")
+
+                    if self.anykey_handler.handle_anykey_screen(screen, loaded_templates, self.screen_state, deanak_id):
+                        continue
 
                     if self.password_handler.handle_password_screen(screen, loaded_templates, password_list, self.screen_state, deanak_id):
                         continue

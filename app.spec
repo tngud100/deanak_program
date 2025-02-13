@@ -23,6 +23,9 @@ a = Analysis(
         'win32api',
         'win32con',
         'pywinauto',
+
+        # cryptography
+        'cryptography',
         
         # Async
         'asyncio',
