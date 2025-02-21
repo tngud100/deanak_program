@@ -27,6 +27,7 @@ class TemplateService:
             "team_select_screen": '/selectTeam.png',
             "team_select_text": '/selectTeamText.png',
             "team_select_icon": '/selectTeamIcon.png',
+            "main_info_modal_screen": '/mainInfoModal.png',
             # "achivement_modal_before_main_screen": '/beforeMainAchivementModal.png',
             # "achivement_modal_cancel_btn": '/AchivementModalCloseBtn.png',
             "top_class_before_main_screen": '/beforeMainTopClass.png',

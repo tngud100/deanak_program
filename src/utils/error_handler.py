@@ -116,17 +116,17 @@ class ErrorHandler:
 
             '2차 비밀번호 틀림': [self.WRONG_PASSWORD_ERROR],
             'OTP': [self.NO_DETECT_OTP_SCENE],
-            '인게임 첫번째 화면': [self.NO_DETECT_ANYKEY_SCENE],
+            '인트로 화면': [self.NO_DETECT_ANYKEY_SCENE],
             '비밀번호 화면': [self.NO_DETECT_PASSWORD_SCENE],
-            'PC방 아이콘': [self.NO_DETECT_PC_ICON],
-            '공지 화면': [self.NO_DETECT_NOTICE_SCENE],
-            '팀선택 화면': [self.NO_DETECT_TEAM_SELECT_SCENE],
-            '구매 화면': [self.NO_DETECT_PURCHASE_SCREEN_SCENE],
-            '메인 화면': [self.NO_DETECT_MAIN_SCREEN_SCENE],
-            '이적 시장 화면': [self.NO_DETECT_MARKET_SCREEN_SCENE],
-            '이적 시장의 판매 선수 리스트 화면': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
-            '모두받기 버튼 비활성화': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
-            '게임 종료 화면': [self.NO_DETECT_EXIT_GAME_SCREEN_SCENE],
+            'PC방 혜택': [self.NO_DETECT_PC_ICON],
+            '공지사항 화면': [self.NO_DETECT_NOTICE_SCENE],
+            '팝업 화면': [self.NO_DETECT_PURCHASE_SCREEN_SCENE],
+            '팀 선택 화면': [self.NO_DETECT_TEAM_SELECT_SCENE],
+            '프리룸 화면': [self.NO_DETECT_MAIN_SCREEN_SCENE],
+            '이적시장 화면': [self.NO_DETECT_MARKET_SCREEN_SCENE],
+            '이적시장의 거래목록': [self.NO_DETECT_GET_ITEM_SCREEN_SCENE],
+            '모두받기 화면': [self.NO_DETECT_GET_ALL_SCREEN_SCENE],
+            '대낙 완료 후 화면': [self.NO_DETECT_EXIT_GAME_SCREEN_SCENE],
         }
         self.error_messages = {
             '프로그램': [

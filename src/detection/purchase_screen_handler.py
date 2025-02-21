@@ -1,3 +1,4 @@
+import random
 from src.utils.error_handler import SkipPurchaseException, ErrorHandler
 from src.models.screen_state import ScreenState
 from src import state
@@ -11,6 +12,8 @@ class PurchaseScreenHandler:
         self.state = state
         self.error_handler = ErrorHandler()
         self.input_controller = input_controller
+        self.modal_x_range = [1195, 1235]
+        self.modal_y_range = [250, 285]
 
     def handle_purchase_screen(self, screen, loaded_templates, screen_state: ScreenState):
         """구매 화면을 처리합니다.
@@ -41,6 +44,14 @@ class PurchaseScreenHandler:
                 if class_top_left and class_bottom_right:
                     self.input_controller.press_key("esc")
                     time.sleep(0.5)
+
+                modal_top_left, modal_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['main_info_modal_screen'], threshold=0.6)
+                if modal_top_left and modal_bottom_right:
+                    random_x = random.randint(self.modal_x_range[0], self.modal_x_range[1])
+                    random_y = random.randint(self.modal_y_range[0], self.modal_y_range[1])
+                    self.input_controller.click(random_x, random_y, 1)
+                    time.sleep(0.5)
+
                 
                 # achivement_top_left, achievement_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['achivement_modal_before_main_screen'])
                 # print(f"업적 모달 화면 존재 여부 확인 중...{screen_state.get_count("purchase_before_main_screen")}/{self.MAX_DETECTION_ATTEMPTS}")

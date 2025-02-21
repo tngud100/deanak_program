@@ -40,8 +40,8 @@ class AutoDeanak:
         self.api = Api()
 
         # 핸들러 초기화
-        self.anykey_handler = AnyKeyScreenHandler(self.input_controller, self.image_matcher, self.capture)
-        self.password_handler = PasswordHandler(self.image_matcher, self.input_controller, self.capture, self.MAX_DETECTION_ATTEMPTS)
+        # self.anykey_handler = AnyKeyScreenHandler(self.input_controller, self.image_matcher, self.capture)
+        self.password_handler = PasswordHandler(self.image_matcher, self.input_controller, self.capture)
         self.notice_handler = NoticeHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
         self.team_select_handler = TeamSelectHandler(self.input_controller, self.image_matcher, self.capture, self.MAX_DETECTION_ATTEMPTS)
         self.purchase_screen_handler = PurchaseScreenHandler(self.input_controller, self.image_matcher, self.capture)
@@ -84,9 +84,11 @@ class AutoDeanak:
                     print("capturing...")
 
                     
-                    if not self.screen_state.anykey_passed:
-                        self.screen_state.increment_count("anykey")
-                    if not self.screen_state.password_passed and self.screen_state.anykey_passed:
+                    # if not self.screen_state.anykey_passed:
+                    #     self.screen_state.increment_count("anykey")
+                    # if not self.screen_state.password_passed and self.screen_state.anykey_passed:
+                    #     self.screen_state.increment_count("password")
+                    if not self.screen_state.password_passed:
                         self.screen_state.increment_count("password")
                     if not self.screen_state.notice_passed and self.screen_state.password_passed:
                         self.screen_state.increment_count("notice")
@@ -103,8 +105,8 @@ class AutoDeanak:
                     if not self.screen_state.top_class_screen_passed and self.screen_state.get_all_btn_screen_passed:
                         self.screen_state.increment_count("top_class_screen")
 
-                    if self.anykey_handler.handle_anykey_screen(screen, loaded_templates, self.screen_state, deanak_id):
-                        continue
+                    # if self.anykey_handler.handle_anykey_screen(screen, loaded_templates, self.screen_state, deanak_id):
+                    #     continue
 
                     if self.password_handler.handle_password_screen(screen, loaded_templates, password_list, self.screen_state, deanak_id):
                         continue

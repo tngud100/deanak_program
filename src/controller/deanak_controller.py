@@ -8,6 +8,7 @@ from src.service.do_service import DoService
 from src.service.otp_service import OTPService
 from src.service.template_service import TemplateService
 from src.service.auto_deanak import AutoDeanak
+from src.utils import remote_controller
 from src.utils.api import Api
 from src.utils.remote_controller import RemoteController
 from src.utils.error_handler import DuplicateLoginError, ErrorHandler, ControllerError, DeanakError, OTPError, OTPTimeoutError, OTPOverTimeDetectError, NoDetectionError, TemplateEmptyError, NoWorkerError, CantFindPcNumError, CantFindRemoteProgram
@@ -42,6 +43,8 @@ async def do_task(request, deanak_info:dict=None):
         server_id = await unique_id.read_unique_id()
 
         if deanak_info['login_type'] == "일회용":
+            await exec_recordProgram()
+            
             async with get_db_context() as db:
                 await remote_pcs_dao.update_tasks_request(db, server_id, "working")
                 print("state = working으로 변경")
@@ -50,6 +53,8 @@ async def do_task(request, deanak_info:dict=None):
             
         if request == "otp_check":
             if not deanak_info['login_type'] == "일회용":
+                print(deanak_info['otp'])
+                await exec_recordProgram()
                 # 작업 상태 업데이트
                 async with get_db_context() as db:
                     await remote_pcs_dao.update_tasks_request(db, server_id, "working")
@@ -61,11 +66,13 @@ async def do_task(request, deanak_info:dict=None):
                 return False
             
             print("otp 인식 완료, 15초 뒤 대낙 작업 시작")
-            return await do_task("deanak_start", deanak_info)
+            await asyncio.sleep(10)
+            if not await do_deanak(deanak_info, server_id):
+                return False
 
         if request == "deanak_start":
-            
-            if not deanak_info['otp'] or not deanak_info['login_type'] == "일회용":
+            if not deanak_info['login_type'] == "일회용":
+                await exec_recordProgram()
                 # 작업 상태 업데이트
                 async with get_db_context() as db:
                     await remote_pcs_dao.update_tasks_request(db, server_id, "working")
@@ -73,7 +80,7 @@ async def do_task(request, deanak_info:dict=None):
                 print("state = working으로 변경")
 
             print("게임이 켜지기까지 기다리는 중...")
-            await asyncio.sleep(5)
+            await asyncio.sleep(10)
             if not await do_deanak(deanak_info, server_id):
                 return False
         
@@ -150,6 +157,13 @@ async def do_deanak(deanak_info, server_id):
     except Exception as e:
         raise ControllerError(f"deanak 작업 중 오류 - do_task함수")
 
+async def exec_recordProgram():
+    input_controller.hotkey('Ctrl', 'Alt', 'f')
+    # print("검색창")
+    # await asyncio.sleep(1)
+
+    # input_controller.type_text('autoRecord')
+    # input_controller.press_key('enter')
 
 async def update_error_status(server_id, e, context, ErrorMessage):
     """에러 처리"""

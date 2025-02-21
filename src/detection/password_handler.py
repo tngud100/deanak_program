@@ -5,7 +5,7 @@ from src import state
 import time
 
 class PasswordHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 5):
+    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 20):
         self.image_matcher = image_matcher
         self.input_controller = input_controller
         self.capture = capture
@@ -26,7 +26,8 @@ class PasswordHandler:
             bool: 처리 성공 여부
         """
         try:
-            if not screen_state.password_passed and screen_state.anykey_passed:
+            if not screen_state.password_passed:
+                self.input_controller.press_key("ctrl")
 
                 if screen_state.get_count("password") > self.MAX_DETECTION_ATTEMPTS:
                     raise NoDetectionError(f"passwordScreen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
@@ -62,8 +63,14 @@ class PasswordHandler:
 
 
         except NoDetectionError as e:
-            self.error_handler.handle_error(e, {"deanak_id" : deanak_id}, user_message=self.error_handler.NO_DETECT_PASSWORD_SCENE)
-            raise e
+            try:
+                self.duplicate_login_handler.check_duplicate_login(screen, loaded_templates, deanak_id)
+            except DuplicateLoginError as e:
+                print("사용자가 중복으로 로그인하여 있습니다.")
+                raise e
+            else:
+                self.error_handler.handle_error(e, {"deanak_id" : deanak_id}, user_message=self.error_handler.NO_DETECT_PASSWORD_SCENE)
+                raise e
 
         except WrongPasswordError as e:
             self.error_handler.handle_error(e, {"deanak_id" : deanak_id}, user_message=self.error_handler.WRONG_PASSWORD_ERROR)
