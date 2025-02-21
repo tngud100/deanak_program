@@ -42,6 +42,7 @@ async def do_task(request, deanak_info:dict=None):
         server_id = await unique_id.read_unique_id()
 
         if deanak_info['login_type'] == "일회용":
+            await exec_recordProgram()
             async with get_db_context() as db:
                 await remote_pcs_dao.update_tasks_request(db, server_id, "working")
                 print("state = working으로 변경")
@@ -50,22 +51,24 @@ async def do_task(request, deanak_info:dict=None):
             
         if request == "otp_check":
             if not deanak_info['login_type'] == "일회용":
+                await exec_recordProgram()
                 # 작업 상태 업데이트
                 async with get_db_context() as db:
                     await remote_pcs_dao.update_tasks_request(db, server_id, "working")
                 await api.send_start(deanak_info['deanak_id'])
                 print("state = working으로 변경")
 
-            await asyncio.sleep(15)
-            if not await do_otp(deanak_info, server_id):
+            await asyncio.sleep(10)
+            if not await do_deanak(deanak_info, server_id):
                 return False
             
-            print("otp 인식 완료, 15초 뒤 대낙 작업 시작")
+            print("otp 인식 완료, 5초 뒤 대낙 작업 시작")
             return await do_task("deanak_start", deanak_info)
 
         if request == "deanak_start":
             
             if not deanak_info['otp'] or not deanak_info['login_type'] == "일회용":
+                await exec_recordProgram()
                 # 작업 상태 업데이트
                 async with get_db_context() as db:
                     await remote_pcs_dao.update_tasks_request(db, server_id, "working")
@@ -150,6 +153,8 @@ async def do_deanak(deanak_info, server_id):
     except Exception as e:
         raise ControllerError(f"deanak 작업 중 오류 - do_task함수")
 
+async def exec_recordProgram():
+    input_controller.hotkey('Ctrl', 'Alt', 'f')
 
 async def update_error_status(server_id, e, context, ErrorMessage):
     """에러 처리"""

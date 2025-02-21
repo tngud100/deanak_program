@@ -14,6 +14,7 @@ class ScreenState:
     main_screen_passed: bool = False
     market_screen_passed: bool = False
     get_item_screen_passed: bool = False
+    top_class_text_screen_passed: bool = False
     arrange_btn_screen_passed: bool = False
     get_all_btn_screen_passed: bool = False
     top_class_screen_passed: bool = False
@@ -51,6 +52,7 @@ class ScreenState:
                 "market_screen": 0,
                 "get_item_screen": 0,
                 "get_item_btn": 0,
+                "top_class_text": 0,
                 "arrange_btn": 0,
                 "get_all_btn": 0,
                 "top_class_screen": 0,
@@ -85,6 +87,7 @@ class ScreenState:
         self.main_screen_passed = False
         self.market_screen_passed = False
         self.get_item_screen_passed = False
+        self.top_class_text_screen_passed = False
         self.arrange_btn_screen_passed = False
         self.get_all_btn_screen_passed = False
         self.top_class_screen_passed = False

@@ -1,5 +1,5 @@
 from src.detection.anykey_screen_handler import AnyKeyScreenHandler
-from src.utils.error_handler import NoDetectionPCIconError, DuplicateLoginError, NoDetectionError, DeanakError, WrongPasswordError, APICallError, TemplateEmptyError
+from src.utils.error_handler import NoDetectionPCIconError, DuplicateLoginError, NoDetectionError, DeanakError, NoDetectionTopClassError, WrongPasswordError, APICallError, TemplateEmptyError
 from src.utils.image_matcher import ImageMatcher
 from src.utils.input_controller import InputController
 from src.utils.remote_controller import RemoteController
@@ -55,13 +55,14 @@ class AutoDeanak:
     async def _getter_info(self, deanak_info):
         worker_id = deanak_info['worker_id']
         deanak_id = deanak_info['deanak_id']
+        topclass = deanak_info['topclass']
         password_list = list(str(deanak_info['pw2']))
         server_id = await self.state.unique_id().read_unique_id()
 
         if not server_id or not worker_id or not deanak_id or not password_list:
             raise ValueError("deanak_info의 파라미터를 확인해주세요.")
 
-        return worker_id, password_list, server_id, deanak_id
+        return worker_id, password_list, server_id, deanak_id, topclass
 
     async def deanak_start(self, deanak_info:dict=None):
         """대낙 프로세스 시작"""
@@ -70,7 +71,7 @@ class AutoDeanak:
             if not deanak_info:
                 raise ValueError("대낙 정보가 없습니다.")
             
-            worker_id, password_list, server_id, deanak_id = await self._getter_info(deanak_info)
+            worker_id, password_list, server_id, deanak_id, topclass = await self._getter_info(deanak_info)
             print(worker_id, password_list)
             
             loaded_templates = self.template_service.get_templates(password_list)
@@ -127,7 +128,7 @@ class AutoDeanak:
                     if self.get_item_screen_handler.handle_get_item_screen(screen, loaded_templates, self.screen_state, deanak_id):
                         continue
 
-                    if self.get_all_screen_handler.handle_get_all_screen(screen, loaded_templates, self.screen_state, deanak_id):
+                    if self.get_all_screen_handler.handle_get_all_screen(screen, loaded_templates, self.screen_state, deanak_id, topclass):
                         continue
 
                     if self.top_class_screen_handler.handle_top_class_screen(screen, loaded_templates, self.screen_state):
@@ -152,7 +153,7 @@ class AutoDeanak:
                     await asyncio.sleep(2)
 
 
-                except (NoDetectionError, WrongPasswordError, TemplateEmptyError, APICallError, DuplicateLoginError, NoDetectionPCIconError) as e:
+                except (NoDetectionTopClassError, NoDetectionError, WrongPasswordError, TemplateEmptyError, APICallError, DuplicateLoginError, NoDetectionPCIconError) as e:
                     async with get_db_context() as db:
                         await self.remote_pcs_dao.update_tasks_request(db, server_id, "stopped")
                     self.state.is_running = False

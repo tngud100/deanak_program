@@ -29,11 +29,14 @@ class TemplateService:
             "team_select_icon": '/selectTeamIcon.png',
             # "achivement_modal_before_main_screen": '/beforeMainAchivementModal.png',
             # "achivement_modal_cancel_btn": '/AchivementModalCloseBtn.png',
+            "main_info_modal_screen": '/mainInfoModal.png',
             "top_class_before_main_screen": '/beforeMainTopClass.png',
             "purchase_before_main_screen": '/beforeMainPurchases.png',
             "purchase_cancel_btn": '/purchaseCloseBtn.png',
             "pc_icon": '/pcIcon.png',
             "pc_icon_bar": '/pcIconBar.png',
+            # "top_class_icon": '/topClassIcon.png',
+            # "no_top_class_icon": '/noTopClassIcon.png',
             "main_screen": '/mainScreen.png',
             "market_screen": '/marketScreen.png',
             "market_full_screen": '/marketFullScreen.png',
@@ -42,6 +45,8 @@ class TemplateService:
             "get_all_screen": '/getAllScreen.png',
             "list_btn": '/sellList.png',
             "get_item_btn": '/getItemConfirm.png',
+            "top_class_text_screen": '/noTopClassTextScreen.png',
+            "top_class_text": '/noTopClassText.png',
             "arrange_btn_screen": '/priceArrangeScreen.png',
             "arrange_btn": '/priceArrangeBtn.png',
             "price_desc": '/priceDesc.png',
@@ -169,8 +174,8 @@ class TemplateService:
                 raise TemplateEmptyError(f"존재하지 않는 템플릿 키: {key}")
                 
             path = self.TEMPLATES[key]
-            template = self._load_template(path)
-            # template = self._local_load_template(path)
+            # template = self._load_template(path)
+            template = self._local_load_template(path)
             if template is None:
                 raise TemplateEmptyError(f"템플릿 로드 실패: {path}")
                 
@@ -183,8 +188,8 @@ class TemplateService:
         templates = {}
         for password in password_list:
             path = f'/{password}.png'
-            template = self._load_template(path)
-            # template = self._local_load_template(path)
+            # template = self._load_template(path)
+            template = self._local_load_template(path)
             if template is None:
                 raise TemplateEmptyError(f"비밀번호 템플릿 로드 실패: {path}")
             templates[password] = template
@@ -219,8 +224,8 @@ class TemplateService:
                 # 서버에서 이미지를 다운로드 받기 때문에 파일 존재 확인 불필요
 
                 # 템플릿 로드
-                template = self._load_template(path)
-                # template = self._local_load_template(path)
+                # template = self._load_template(path)
+                template = self._local_load_template(path)
                 if template is None:
                     raise TemplateEmptyError(f"템플릿 로드에 실패했습니다: {path}")
                 

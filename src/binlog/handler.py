@@ -97,6 +97,7 @@ async def handle_row_event(event, server_id):
                         coupon_count = after_values.get("coupon_count")
                         deanak_state = after_values.get("state")
                         login_type = after_values.get("login_type")
+                        topclass = after_values.get("topclass")
 
                         # print(f"개별 row 처리: deanak_id={deanak_id}, service={service}, worker_id={worker_id}, pw2={pw2}, coupon_count={coupon_count}, otp={otp}, otp_pass={otp_pass}, deanak_state={deanak_state}")
 
@@ -109,7 +110,8 @@ async def handle_row_event(event, server_id):
                             "otp_pass": otp_pass,
                             "coupon_count": coupon_count,
                             "deanak_state": deanak_state,
-                            "login_type": login_type
+                            "login_type": login_type,
+                            "topclass": topclass
                         }
                         # print(f"otp={otp}, otp_pass={otp_pass}, coupon_count={coupon_count}, worker_id={worker_id}, deanak_state={deanak_state}")
 

@@ -31,21 +31,38 @@ class MainScreenHandler:
         try:
             if not screen_state.main_screen_passed and screen_state.purchase_screen_passed:
                 
-                # if not screen_state.pc_icon_passed:
-                #     screen_state.increment_count("pc_icon")
-                #     if screen_state.get_count("pc_icon") > self.MAX_PCICON_DETECTION_ATTEMPTS:
-                #         raise NoDetectionPCIconError(f"pc_bar 화면이 {self.MAX_PCICON_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
+                if not screen_state.pc_icon_passed:
+                    screen_state.increment_count("pc_icon")
+                    # if screen_state.get_count("pc_icon") > self.MAX_PCICON_DETECTION_ATTEMPTS:
+                    #     raise NoDetectionPCIconError(f"pc_bar 화면이 {self.MAX_PCICON_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
 
-                #     top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['pc_icon_bar'], threshold=0.6)
-                #     if top_left is None or bottom_right is None:
-                #         return False
-                #     roi = (top_left[0], top_left[1] - 52, bottom_right[0], top_left[1])
-                #     if self.image_matcher.process_template(screen, 'pc_icon', loaded_templates, threshold=0.7, roi=roi):
-                #         screen_state.pc_icon_passed = True
-                #         print("pc_icon 확인 완료")
-                #         return True
+                    # top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['pc_icon_bar'], threshold=0.6)
+                    # if top_left is None or bottom_right is None:
+                    #     return False
+                    # roi = (top_left[0], top_left[1] - 52, bottom_right[0], top_left[1])
+                    # if self.image_matcher.process_template(screen, 'pc_icon', loaded_templates, threshold=0.7, roi=roi):
+                    screen_state.pc_icon_passed = True
+                    print("pc_icon 확인 완료")
+                    return True
 
-                #     return False
+                    # return False
+
+                    # top_class_roi = (1420, 40, 1480, 65)
+                    # # 이미지를 먼저 맞춰보고 그 이후에 색깔로 구분
+                    # result_top = self.image_matcher.detect_template_color_with_s(screen, loaded_templates['top_class_icon'], threshold=0.8, roi=top_class_roi)
+                    # print(f"topClass (매칭값: {result_top})")
+                    # if result_top != (None, None, 0):
+                    #     print("topClass 확인 완료")
+                    #     return False
+
+                    # result_no_top = self.image_matcher.detect_template_color_with_s(screen, loaded_templates['no_top_class_icon'], threshold=0.8, roi=top_class_roi)
+                    # print(f"notopClass (매칭값: {result_no_top})")
+                    # if result_no_top != (None, None, 0):
+                    #     print("topClass 확인 안댐")
+                    #     return False
+
+                    # print("둘다 확인 안됨")
+                    
 
                 if screen_state.get_count("main_screen") > self.MAX_DETECTION_ATTEMPTS:
                     raise NoDetectionError(f"main_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
