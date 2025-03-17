@@ -26,7 +26,7 @@ class ExitGameHandler:
         if screen_state.get_count(screen_type) > self.MAX_DETECTION_ATTEMPTS:
             raise NoDetectionError(f"{screen_type} 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
         
-        top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates[screen_type], threshold=0.6)
+        top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates[screen_type], threshold=0.6, template_key=screen_type)
         if top_left and bottom_right:
             # roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
             # if self.image_matcher.process_template(screen, f"{screen_type}_btn", loaded_templates, click=True, roi=roi, threshold=0.6):

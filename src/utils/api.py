@@ -129,3 +129,19 @@ class Api:
         if success:
             print("작업 대기 완료")
         return success
+
+    async def send_naver_login(self, worker_id):
+        url = f"{self.url}/login/naver/{worker_id}"
+        print(f"Sending naver login request to URL: {url}")
+        success, _ = await self._make_request('post', url)
+        if success:
+            print("네이버 로그인 완료")
+        return success
+    
+    async def send_game_start(self, worker_id):
+        url = f"{self.url}/gameStartBtnRun/{worker_id}"
+        print(f"Sending game start request to URL: {url}")
+        success, _ = await self._make_request('post', url)
+        if success:
+            print("게임 실행 API 호출 완료")
+        return success

@@ -34,7 +34,7 @@ class GetAllScreenHandler:
                     raise NoDetectionError(f"arrange_btn_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
                 if not screen_state.arrange_btn_screen_passed:
-                    top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['arrange_btn_screen'])
+                    top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['arrange_btn_screen'], template_key = 'arrange_btn_screen')
                     if top_left and bottom_right:
                         # roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
                         # if self.image_matcher.process_template(screen, 'arrange_btn', loaded_templates, click=True, roi=roi):
@@ -50,7 +50,7 @@ class GetAllScreenHandler:
                     if screen_state.get_count("get_all_btn") > self.MAX_DETECTION_ATTEMPTS:
                         raise NoDetectionError(f"get_all_btn_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
 
-                    top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['get_all_btn_screen'])
+                    top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['get_all_btn_screen'], template_key = 'get_all_btn_screen')
                     if top_left and bottom_right:
                         # roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
                         # if self.image_matcher.process_template(screen, 'get_all_btn', loaded_templates, click=True, roi=roi):

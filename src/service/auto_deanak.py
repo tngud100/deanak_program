@@ -11,6 +11,7 @@ from src import state
 from database import get_db_context
 from src.dao.remote_pcs_dao import RemoteDao
 from src.utils.api import Api
+from sqlalchemy import exc as sqlalchemy_exc
 
 from src.detection.password_handler import PasswordHandler
 from src.detection.notice_handler import NoticeHandler
@@ -83,7 +84,6 @@ class AutoDeanak:
                     screen = self.capture.screen_capture()
                     print("capturing...")
 
-                    
                     # if not self.screen_state.anykey_passed:
                     #     self.screen_state.increment_count("anykey")
                     # if not self.screen_state.password_passed and self.screen_state.anykey_passed:
@@ -153,7 +153,6 @@ class AutoDeanak:
 
                     await asyncio.sleep(2)
 
-
                 except (NoDetectionError, WrongPasswordError, TemplateEmptyError, APICallError, DuplicateLoginError, NoDetectionPCIconError) as e:
                     async with get_db_context() as db:
                         await self.remote_pcs_dao.update_tasks_request(db, server_id, "stopped")
@@ -165,6 +164,12 @@ class AutoDeanak:
                     self.error_handler.handle_error(screen_error, {"deanak_id": deanak_id}, user_message=self.error_handler.DEANAK_ERROR)
                     self.state.is_running = False
                     return False
+
+        except sqlalchemy_exc.OperationalError as db_error:
+            if "Lost connection" in str(db_error):
+                self.state.is_running = False
+                self.error_handler.handle_error(screen_error, {"deanak_id": deanak_id}, user_message=self.error_handler.NETWORK_ERROR)
+                return False
 
         except (Exception, ValueError) as e:
             self.state.is_running = False

@@ -27,7 +27,7 @@ class TopClassScreenHandler:
                 if screen_state.get_count("top_class_screen") > self.MAX_DETECTION_ATTEMPTS:
                     raise SkipTopClassException("탑클래스 없음")
                 
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['top_class_screen'])
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['top_class_screen'], template_key = 'top_class_screen')
                 print(f"탑클래스 화면 존재 여부 확인 중...{screen_state.get_count("top_class_screen")}/{self.MAX_DETECTION_ATTEMPTS}")
                 if top_left and bottom_right:
                     roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])

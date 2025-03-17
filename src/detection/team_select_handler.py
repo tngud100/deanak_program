@@ -35,7 +35,7 @@ class TeamSelectHandler:
                 # top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_screen'], threshold=0.8)
                 # if top_left and bottom_right:
                     # 팀 선택 텍스트 탐지
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_icon'], threshold=0.8)
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['team_select_icon'], threshold=0.8, template_key = "team_select_icon")
                 
                 if top_left and bottom_right:
                     # box_height = bottom_right[1] - top_left[1]

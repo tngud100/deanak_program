@@ -12,9 +12,9 @@ class DuplicateLoginHandler:
         try:
             print("중복으로 로그인 체크")
 
-            if self.image_matcher.process_template(screen, 'some_one_otp_pass_error', loaded_templates, threshold=0.8):
-                raise DuplicateLoginError(self.error_handler.DUPLICATE_OTP_CHECK_ERROR)
-
+            # if self.image_matcher.process_template(screen, 'some_one_otp_pass_error', loaded_templates, threshold=0.8):
+            #     raise DuplicateLoginError(self.error_handler.DUPLICATE_OTP_CHECK_ERROR)
+            
             if self.image_matcher.process_template(screen, 'same_login_in_anykey_error', loaded_templates, threshold=0.8):
                 raise DuplicateLoginError(self.error_handler.SAME_START_ERROR_BY_ANYKEY_SCENE)
 
@@ -27,6 +27,9 @@ class DuplicateLoginHandler:
             if self.image_matcher.process_template(screen, 'same_login_in_password_error', loaded_templates, threshold=0.8):
                 raise DuplicateLoginError(self.error_handler.SAME_START_ERROR_BY_PASSWORD_SCENE)
             
+            if self.image_matcher.process_template(screen, 'network_error', loaded_templates, threshold=0.8):
+                raise DuplicateLoginError(self.error_handler.NETWORK_ERROR)
+
             return False
         except DuplicateLoginError as e:
             self.error_handler.handle_error(e, {"deanak_id" : deanak_id}, user_message=str(e))

@@ -24,7 +24,7 @@ class OTPService:
             attempt += 1
             print(f"OTP 인식 시도 {attempt}/{max_attempts}...")
             
-            top_left, bottom_right, _ = self.image_matcher.detect_template(screen, templates["otp_frame"], threshold=0.6)
+            top_left, bottom_right, _ = self.image_matcher.detect_template(screen, templates["otp_frame"], threshold=0.6, template_key="otp_frame")
             if not top_left or not bottom_right:
                 if attempt == max_attempts:
                     raise OTPOverTimeDetectError("OTP 감지 횟수 초과 - OTP FRAME")
@@ -36,7 +36,7 @@ class OTPService:
             roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
 
             # OTP 텍스트 추출
-            otp_text = await self.image_matcher.extract_text(screen, templates["otp_number"], threshold=0.6, roi=roi)
+            otp_text = await self.image_matcher.extract_text(screen, templates["otp_number"], threshold=0.6, roi=roi, template_key="otp_number")
             if not otp_text:
                 if attempt == max_attempts:
                     raise OTPOverTimeDetectError("OTP 감지 횟수 초과 - OTP TEXT")
@@ -55,7 +55,7 @@ class OTPService:
         if screen is None:
             raise NoDetectionError("실패 otp 화면 캡처 중 캡처 실패")
 
-        top_left, bottom_right, _ = self.image_matcher.detect_template(screen, templates["otp_frame"], threshold=0.6)
+        top_left, bottom_right, _ = self.image_matcher.detect_template(screen, templates["otp_frame"], threshold=0.6, template_key='otp_frame')
 
         if not top_left or not bottom_right:
             print("OTP 영역 사라짐")
@@ -65,7 +65,7 @@ class OTPService:
         roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
 
         # OTP 텍스트 추출
-        otp_wrong = await self.image_matcher.extract_text(screen, templates["otp_wrong"], threshold=0.6, roi=roi)
+        otp_wrong = await self.image_matcher.extract_text(screen, templates["otp_wrong"], threshold=0.6, roi=roi, template_key="otp_wrong")
         if not otp_wrong:
             print("사용자 입력을 기다리고 있습니다.")
             return 0

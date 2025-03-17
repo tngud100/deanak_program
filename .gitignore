@@ -33,6 +33,7 @@ dist/
 .coverage
 htmlcov/
 tests
+datasets
 
 # 임시 파일
 *.tmp

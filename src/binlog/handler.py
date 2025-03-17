@@ -87,12 +87,11 @@ async def handle_row_event(event, server_id):
                             print(f"before_values.get('otp_pass')={before_values.get('otp_pass')}, after_values.get('otp_pass')={after_values.get('otp_pass')}")
                             continue
 
-
                         # deanak 테이블의 필요한 값들 가져오기
                         deanak_id = after_values.get("id")
                         service = after_values.get("service")
                         pw2 = after_values.get("pw2")
-                        otp = after_values.get("otp")
+                        # otp = after_values.get("otp")
                         otp_pass = after_values.get("otp_pass")
                         coupon_count = after_values.get("coupon_count")
                         deanak_state = after_values.get("state")
@@ -105,7 +104,7 @@ async def handle_row_event(event, server_id):
                             "worker_id": worker_id,
                             "service": service,
                             "pw2": pw2,
-                            "otp": otp,
+                            # "otp": otp,
                             "otp_pass": otp_pass,
                             "coupon_count": coupon_count,
                             "deanak_state": deanak_state,
@@ -114,24 +113,32 @@ async def handle_row_event(event, server_id):
                         # print(f"otp={otp}, otp_pass={otp_pass}, coupon_count={coupon_count}, worker_id={worker_id}, deanak_state={deanak_state}")
 
                         context = {"deanak_id": deanak_id, "worker_id": worker_id}
-
-                        if service == "일반대낙" and otp == 0 and coupon_count == 0 and deanak_state == '2':
+                        if service == "일반대낙" and coupon_count == 0 and deanak_state == '2':
                             # 작업 중일 때 새로운 작업이 들어올시에 대기열 queue에 등록
                             remote_pcs = await check_remote_pc_state(server_id, worker_id, deanak_info)
                             if not remote_pcs:
                                 continue
 
                             print(f"대낙 실행")
-                            await do_task("deanak_start", deanak_info=deanak_info)
+                            await do_task(deanak_info=deanak_info)
+
+                        # if service == "일반대낙" and otp == 0 and coupon_count == 0 and deanak_state == '2':
+                        #     # 작업 중일 때 새로운 작업이 들어올시에 대기열 queue에 등록
+                        #     remote_pcs = await check_remote_pc_state(server_id, worker_id, deanak_info)
+                        #     if not remote_pcs:
+                        #         continue
+
+                        #     print(f"대낙 실행")
+                        #     await do_task("deanak_start", deanak_info=deanak_info)
                     
-                        if service == "일반대낙" and otp == 1 and otp_pass == 0 and coupon_count == 0 and deanak_state == '2':
-                            # 작업 중일 때 새로운 작업이 들어올시에 대기열 queue에 등록
-                            remote_pcs = await check_remote_pc_state(server_id, worker_id, deanak_info)
-                            if not remote_pcs:
-                                continue
+                        # if service == "일반대낙" and otp == 1 and otp_pass == 0 and coupon_count == 0 and deanak_state == '2':
+                        #     # 작업 중일 때 새로운 작업이 들어올시에 대기열 queue에 등록
+                        #     remote_pcs = await check_remote_pc_state(server_id, worker_id, deanak_info)
+                        #     if not remote_pcs:
+                        #         continue
                             
-                            print(f"otp 인식 시작")
-                            await do_task("otp_check", deanak_info=deanak_info)
+                        #     print(f"otp 인식 시작")
+                        #     await do_task("otp_check", deanak_info=deanak_info)
             
             except ControllerError as e:
                 async with get_db_context() as db:

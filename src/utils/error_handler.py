@@ -70,8 +70,10 @@ class ErrorHandler:
     SOMEONE_CONNECT_TRY_ERROR = "계정 사용자가 중복 로그인을 시도"
     SAME_START_ERROR_BY_PASSWORD_SCENE = "인게임 동시 접속으로 인한 오류(위치 : PasswordScene)"
     DUPLICATE_OTP_CHECK_ERROR = "OTP처리 중 다른 사용자가 중복으로 OTP 체크을 시도"
+    NETWORK_ERROR = "불안정한 네트워크"
 
     WRONG_PASSWORD_ERROR = "2차 비밀번호 틀림"
+    NO_DETECT_INITIAL_SCREEN = "초기 화면 탐지 실패"
     NO_DETECT_ANYKEY_SCENE = "첫번째 화면 탐지 실패"
     NO_DETECT_PASSWORD_SCENE = "비밀번호 화면 탐지 실패"
     NO_DETECT_NOTICE_SCENE = "공지 화면 탐지 실패"
@@ -113,8 +115,10 @@ class ErrorHandler:
             '고객이 중복 로그인을 시도': [self.SOMEONE_CONNECT_TRY_ERROR],
             '인게임 동시 접속': [self.SAME_START_ERROR_BY_PASSWORD_SCENE],
             '고객이 중복 OTP 시도': [self.DUPLICATE_OTP_CHECK_ERROR],
+            '네트워크 에러': [self.NETWORK_ERROR],
 
             '2차 비밀번호 틀림': [self.WRONG_PASSWORD_ERROR],
+            'otp 혹은 비밀번호 화면': [self.NO_DETECT_INITIAL_SCREEN],
             'OTP': [self.NO_DETECT_OTP_SCENE],
             '인트로 화면': [self.NO_DETECT_ANYKEY_SCENE],
             '비밀번호 화면': [self.NO_DETECT_PASSWORD_SCENE],
@@ -139,7 +143,8 @@ class ErrorHandler:
                 self.HANDLER_ERROR,
                 self.DEANAK_ERROR,
                 self.EMPTY_PASSWORD_TEMPLATE,
-                self.OTP_ERROR
+                self.OTP_ERROR,
+                self.NETWORK_ERROR
             ],
             '중복 로그인': [
                 self.SAME_START_ERROR_BY_ANYKEY_SCENE,
@@ -154,6 +159,7 @@ class ErrorHandler:
             ],
             '비밀번호': [self.WRONG_PASSWORD_ERROR],
             '탐지 실패':[
+                self.NO_DETECT_INITIAL_SCREEN,
                 self.NO_DETECT_OTP_SCENE,
                 self.NO_DETECT_ANYKEY_SCENE,
                 self.NO_DETECT_PASSWORD_SCENE,

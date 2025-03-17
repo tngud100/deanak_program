@@ -34,7 +34,7 @@ class MarketScreenHandler:
                 if screen_state.get_count("market_screen") > self.MAX_DETECTION_ATTEMPTS:
                     raise NoDetectionError(f"market_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['market_full_screen'], threshold=0.6)
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['market_full_screen'], threshold=0.6, template_key = 'market_full_screen')
                 print(f"감지 완료: screen_type: market_full_screen, top_left: {top_left}, bottom_right: {bottom_right}")
                 
                 if top_left and bottom_right:

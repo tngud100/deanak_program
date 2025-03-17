@@ -31,7 +31,7 @@ class GetItemScreenHandler:
                 if screen_state.get_count("get_item_screen") > self.MAX_DETECTION_ATTEMPTS:
                     raise NoDetectionError(f"get_item_screen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['get_item_screen'])
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['get_item_screen'], template_key = 'get_item_screen')
                 if top_left and bottom_right:
                     # roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
                     # if self.image_matcher.process_template(screen, 'get_item_btn', loaded_templates, click=True, roi=roi):

@@ -31,7 +31,7 @@ class PurchaseScreenHandler:
                 if screen_state.get_count("purchase_before_main_screen") > self.MAX_DETECTION_ATTEMPTS:
                     raise SkipPurchaseException("메인 화면 전 구매 화면을 스킵합니다")
                 
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['purchase_before_main_screen'])
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['purchase_before_main_screen'], template_key = 'purchase_before_main_screen')
                 print(f"구매 화면 존재 여부 확인 중...{screen_state.get_count("purchase_before_main_screen")}/{self.MAX_DETECTION_ATTEMPTS}")
                 if top_left and bottom_right:
                     # roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
@@ -39,13 +39,13 @@ class PurchaseScreenHandler:
                     self.input_controller.press_key("esc")
                     time.sleep(0.5)
             
-                class_top_left, class_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['top_class_before_main_screen'])
+                class_top_left, class_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['top_class_before_main_screen'], template_key = 'top_class_before_main_screen')
                 print(f"탑클 화면 존재 여부 확인 중...{screen_state.get_count("purchase_before_main_screen")}/{self.MAX_DETECTION_ATTEMPTS}")
                 if class_top_left and class_bottom_right:
                     self.input_controller.press_key("esc")
                     time.sleep(0.5)
 
-                modal_top_left, modal_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['main_info_modal_screen'], threshold=0.6)
+                modal_top_left, modal_bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['main_info_modal_screen'], threshold=0.6, template_key = 'main_info_modal_screen')
                 if modal_top_left and modal_bottom_right:
                     random_x = random.randint(self.modal_x_range[0], self.modal_x_range[1])
                     random_y = random.randint(self.modal_y_range[0], self.modal_y_range[1])

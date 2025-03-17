@@ -5,7 +5,7 @@ from src import state
 import time
 
 class PasswordHandler:
-    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 20):
+    def __init__(self, image_matcher, input_controller, capture, MAX_DETECTION_ATTEMPTS = 15):
         self.image_matcher = image_matcher
         self.input_controller = input_controller
         self.capture = capture
@@ -32,7 +32,7 @@ class PasswordHandler:
                 if screen_state.get_count("password") > self.MAX_DETECTION_ATTEMPTS:
                     raise NoDetectionError(f"passwordScreen 화면이 {self.MAX_DETECTION_ATTEMPTS}회 이상 탐지되지 않았습니다.")
                 
-                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['password_screen'])
+                top_left, bottom_right, _ = self.image_matcher.detect_template(screen, loaded_templates['password_screen'], template_key="password_screen")
                 if top_left and bottom_right:
                     roi = (top_left[0], top_left[1], bottom_right[0], bottom_right[1])
                     for template_key in password_list:

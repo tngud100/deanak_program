@@ -19,6 +19,8 @@ class TemplateService:
             "otp_number": '/otpNumber.png',
             "otp_wrong": '/otpWrong.png',
             # 대낙 관련 템플릿
+            "naver_login": '/naverLoginBtn.png',
+            "naver_login_grey": '/naverLoginBtnGrey.png',
             "anykey_screen": '/anykeyScreen.png',
             "password_screen": '/passwordScreen.png',
             "password_confirm": '/loginConfirm.png',
@@ -60,12 +62,15 @@ class TemplateService:
             "exit_modal": '/exitModalScreen.png',
             "exit_modal_btn": '/exitModalBtn.png',
             # 중복 로그인 에러
+            "connect_logged_in_id_error": "/connectLoggedInId.png",
             "same_login_in_anykey_error": '/atThatSameTimeInAnyKeyAndBeforeAccountExpire.png',
             "someone_already_login_error": '/duplicateConnection.png',
             "some_one_connecting_try_error": '/someOneConnect.png',
             "same_login_in_password_error": '/whenThroughPasswordButSomeOneInPassword.png',
-            "some_one_otp_pass_error": '/whenFinishOTPpassButSomeOnePassOTPEither.png'
+            "some_one_otp_pass_error": '/whenFinishOTPpassButSomeOnePassOTPEither.png',
+            "network_error": '/networkError.png'
         }
+        
         self._template_cache = {}
 
     def _load_template(self, template_path: str):

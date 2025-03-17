@@ -9,12 +9,27 @@ class InputController:
 
     def click(self, x, y, clicks=1):
         """마우스 클릭"""
-        try:
-            pyautogui.click(x=x, y=y, clicks=clicks)
-            time.sleep(self.default_delay)
-        except Exception as e:
-            print(f"마우스 클릭 중 오류 발생: {e}")
-            raise e;
+        max_retries = 3
+        retry_delay = 1
+        
+        for attempt in range(max_retries):
+            try:
+                # 먼저 마우스를 목표 위치 근처로 천천히 이동
+                pyautogui.moveTo(x, y, duration=0.5)
+                time.sleep(0.2)  # 잠시 대기
+                pyautogui.click(x=x, y=y, clicks=clicks)
+                time.sleep(self.default_delay)
+                return
+            except pyautogui.FailSafeException as e:
+                if attempt < max_retries - 1:
+                    print(f"마우스 이동 중 fail-safe 발생. {retry_delay}초 후 재시도... (시도 {attempt + 1}/{max_retries})")
+                    time.sleep(retry_delay)
+                else:
+                    print("최대 재시도 횟수 초과")
+                    raise e
+            except Exception as e:
+                print(f"마우스 클릭 중 오류 발생: {e}")
+                raise e
 
     def press_key(self, key):
         """키 입력"""

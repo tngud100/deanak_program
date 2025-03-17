@@ -25,7 +25,15 @@ load_dotenv(env_path)
 DATABASE_URL = f"mysql+aiomysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
 
 # 비동기 엔진 생성
-async_engine = create_async_engine(DATABASE_URL, echo=False)
+async_engine = create_async_engine(
+    DATABASE_URL,
+    echo=False,
+    pool_pre_ping=True,  # 연결 상태 자동 확인
+    pool_recycle=1800,   # 30분마다 연결 재생성
+    pool_size=5,         # 기본 풀 크기
+    max_overflow=10,     # 추가로 생성 가능한 최대 연결 수
+    pool_timeout=15      # 연결 대기 시간
+)
 
 # 비동기 세션 설정
 AsyncSessionLocal = sessionmaker(
