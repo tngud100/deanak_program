@@ -1,12 +1,12 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+from dotenv import load_dotenv
+
+# 환경변수 로드
+load_dotenv()
 
 # 기본 디렉토리 설정
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# 환경 설정
-ENV = os.getenv('ENV', 'development')  # 기본값은 development
 
 # .env 파일 로드
 env_file = BASE_DIR / '.env'
@@ -15,26 +15,17 @@ if env_file.exists():
 
 # 데이터베이스 설정
 DB_CONFIG = {
-    'development': {
-        "host": os.getenv("DB_HOST", "localhost"),
-        "port": int(os.getenv("DB_PORT", "3306")),
-        "user": os.getenv("DB_USER", "root"),
-        "passwd": os.getenv("DB_PASSWORD", ""),
-        "db": os.getenv("DB_NAME", "auto_daenak_dev")
-    },
-    'production': {
-        "host": os.getenv("DB_HOST"),
-        "port": int(os.getenv("DB_PORT", "3306")),
-        "user": os.getenv("DB_USER"),
-        "passwd": os.getenv("DB_PASSWORD"),
-        "db": os.getenv("DB_NAME")
-    }
-}[ENV]
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": int(os.getenv("DB_PORT", "3306")),
+    "user": os.getenv("DB_USER", "root"),
+    "passwd": os.getenv("DB_PASSWORD", ""),
+    "db": os.getenv("DB_NAME", "auto_daenak")
+}
 
 # MySQL Binlog 설정
 BINLOG_CONFIG = {
     "tables": ["remote_pcs"],
-    "schema": os.getenv("DB_NAME"),
+    "schema": os.getenv("auto_daenak"),
 }
 
 # 재시도 설정

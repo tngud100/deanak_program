@@ -12,7 +12,7 @@ from src.service.auto_deanak import AutoDeanak
 from src.utils import remote_controller
 from src.utils.api import Api
 from src.utils.remote_controller import RemoteController
-from src.utils.error_handler import DuplicateLoginError, ErrorHandler, ControllerError, DeanakError, OTPError, OTPTimeoutError, OTPOverTimeDetectError, NoDetectionError, TemplateEmptyError, NoWorkerError, CantFindPcNumError, CantFindRemoteProgram
+from src.utils.error_handler import DuplicateLoginError, ErrorHandler, ControllerError, DeanakError, NaverSecondCertifyError, OTPError, OTPTimeoutError, OTPOverTimeDetectError, NoDetectionError, TemplateEmptyError, NoWorkerError, CantFindPcNumError, CantFindRemoteProgram
 from src.dao.remote_pcs_dao import RemoteDao
 from src.dao.deanak_dao import DeanakDao
 from src.utils.image_matcher import ImageMatcher
@@ -120,6 +120,9 @@ async def do_task(deanak_info:dict=None):
         return False
     except NoDetectionError as e:
         await update_error_status(server_id, e, context, error_handler.NO_DETECT_INITIAL_SCREEN)
+        return False
+    except NaverSecondCertifyError as e:
+        await update_error_status(server_id, e, context, error_handler.NAVER_SECOND_CERTIFY_ERROR)
         return False
         
     except Exception as e:

@@ -11,16 +11,19 @@ class TemplateService:
     def __init__(self, image_matcher: ImageMatcher):
         self.image_matcher = image_matcher
         load_dotenv()
-        self.base_url = os.getenv("IMG_URL");
+        self.base_url = os.getenv("IMG_URL")
         self.base_url = self.base_url.rstrip('/')
         self.TEMPLATES = {
             # OTP 관련 템플릿
             "otp_frame": '/otpFrame.png',
             "otp_number": '/otpNumber.png',
             "otp_wrong": '/otpWrong.png',
-            # 대낙 관련 템플릿
+            # 네이버 로그인 템플릿
             "naver_login": '/naverLoginBtn.png',
             "naver_login_grey": '/naverLoginBtnGrey.png',
+            "naver_second_notify": '/naverSecondNotify.png',
+            "naver_new_browser_login": '/naverNewBrowserLogin.png',
+            # 대낙 관련 템플릿
             "anykey_screen": '/anykeyScreen.png',
             "password_screen": '/passwordScreen.png',
             "password_confirm": '/loginConfirm.png',

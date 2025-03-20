@@ -145,3 +145,11 @@ class Api:
         if success:
             print("게임 실행 API 호출 완료")
         return success
+
+    async def send_second_certify_error(self, worker_id):
+        url = f"{self.url}/naverAuth/{worker_id}"
+        print(f"Sending second certify error request to URL: {url}")
+        success, _ = await self._make_request('post', url)
+        if success:
+            print("2차 네이버 인증 오류 메시지 전송 완료")
+        return success

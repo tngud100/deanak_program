@@ -18,6 +18,8 @@ class MessageSendFail(Exception):
     pass
 
 
+class NaverSecondCertifyError(Exception):
+    pass
 class DuplicateLoginError(Exception):
     pass
 class ControllerError(Exception):
@@ -65,6 +67,8 @@ class ErrorHandler:
     OTP_TIME_OUT = "otp 인증 시간을 초과하였습니다"
     OTP_ERROR = "otp에서 알 수 없는 오류 발생"
 
+    NAVER_SECOND_CERTIFY_ERROR = "네이버 2차 인증이 존재"
+
     SAME_START_ERROR_BY_ANYKEY_SCENE = "인게임 동시 접속으로 인한 오류(위치 : AnyKeyScene)"
     DUPLICATE_CONNECTING_ERROR = "이미 로그인되어 있는 계정에 로그인 시도"
     SOMEONE_CONNECT_TRY_ERROR = "계정 사용자가 중복 로그인을 시도"
@@ -110,6 +114,7 @@ class ErrorHandler:
             '인식 횟수 초과': [self.OTP_OVER_TIME_DETECT],
             '인증 시간 초과': [self.OTP_TIME_OUT],
 
+            '네이버 2차 인증': [self.NAVER_SECOND_CERTIFY_ERROR],
             '인게임 동시 접속': [self.SAME_START_ERROR_BY_ANYKEY_SCENE],
             '이미 로그인되어 있는 계정': [self.DUPLICATE_CONNECTING_ERROR],
             '고객이 중복 로그인을 시도': [self.SOMEONE_CONNECT_TRY_ERROR],
@@ -146,12 +151,13 @@ class ErrorHandler:
                 self.OTP_ERROR,
                 self.NETWORK_ERROR
             ],
-            '중복 로그인': [
+            '로그인': [
                 self.SAME_START_ERROR_BY_ANYKEY_SCENE,
                 self.DUPLICATE_CONNECTING_ERROR,
                 self.SAME_START_ERROR_BY_PASSWORD_SCENE,
                 self.SOMEONE_CONNECT_TRY_ERROR,
-                self.DUPLICATE_OTP_CHECK_ERROR
+                self.DUPLICATE_OTP_CHECK_ERROR,
+                self.NAVER_SECOND_CERTIFY_ERROR
             ],
             'OTP': [
                 self.OTP_OVER_TIME_DETECT,

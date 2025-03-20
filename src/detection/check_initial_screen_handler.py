@@ -4,7 +4,7 @@ from cv2 import threshold
 from pyautogui import click
 from src.utils import input_controller
 from src.utils.api import Api
-from src.utils.error_handler import NoDetectionError, ErrorHandler
+from src.utils.error_handler import NaverSecondCertifyError, NoDetectionError, ErrorHandler
 from src import state
 import asyncio
 
@@ -37,6 +37,18 @@ class CheckInitialScreenHandler:
             self.input_controller.hotkey('Enter')
             await asyncio.sleep(1.5)
             await self.api.send_game_start(self.state.worker_id)
+
+        if self.image_matcher.process_template(screen, "naver_new_browser_login", loaded_templates, threshold=0.8):
+            self.input_controller.press_key('tab')
+            self.input_controller.press_key('tab')
+            self.input_controller.press_key('tab')
+            self.input_controller.press_key('Enter')
+            await asyncio.sleep(1.5)
+            await self.api.send_game_start(self.state.worker_id)
+
+        if self.image_matcher.process_template(screen, "naver_second_notify", loaded_templates, threshold=0.8):
+            # await self.api.send_second_certify_error(self.state.worker_id)
+            raise NaverSecondCertifyError("네이버 2차 인증이 존재")
 
         
         return (in_game_top_left, in_game_bottom_right), (otp_top_left, otp_bottom_right)
@@ -97,4 +109,6 @@ class CheckInitialScreenHandler:
             return await detection_task()
                 
         except NoDetectionError as e:
+            raise e
+        except NaverSecondCertifyError as e:
             raise e
